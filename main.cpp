@@ -15,9 +15,6 @@ class MyApp : public wxApp
 {
 public:
     virtual bool OnInit();
-
-private:
-    mainWindow* m_frame1 = nullptr;
 };
 
 wxIMPLEMENT_APP(MyApp);
@@ -343,9 +340,7 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     left_column_sizer->Add(generate, 12, wxEXPAND);
 
     /** RIGHT **/
-    //right_column_sizer->Add(wordList, 1, wxEXPAND);
-    MyPanel test = new MyPanel(this, "test");
-
+    right_column_sizer->Add(wordList, 1, wxEXPAND);
 
     /** BODY **/
     body_sizer->Add(left_column_sizer, 25, wxEXPAND);
@@ -365,9 +360,9 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
 
     wxPanel *transferVar = dynamic_cast<wxPanel *>(startsWithField->GetParent());
     startsWithField->Bind(wxEVT_TEXT, &MyFrame::OnSubmit, this);
-    startsWithField->Bind(wxEVT_BUTTON, [](wxCommandEvent &e){
+    //startsWithField->Bind(wxEVT_BUTTON, [](wxCommandEvent &e){
 
-        });
+    //    });
     /*
     startsWithField->SetValidator(wxTextValidator (wxFILTER_NONE, &name));
     //name = "John Doe";
@@ -385,118 +380,3 @@ void MyFrame::OnSubmit(wxCommandEvent &e){
     }
      */
 }
-
-class MyPanel : public wxPanel
-{
-public:
-    MyPanel(wxWindow *parent, std::string name);
-
-private:
-    void OnClick(wxCommandEvent &);
-    void OnSize(wxSizeEvent &);
-wxDECLARE_EVENT_TABLE();
-};
-
-MyPanel::MyPanel(wxWindow *parent, std::string name) : wxPanel(parent)
-{
-    this->SetBackgroundColour(wxColor(200, 100, 100));
-    auto label = new wxStaticText(this, wxID_ANY, name);
-    label->SetFont(startsWithFont);
-    auto labelField = new wxTextCtrl(this, wxID_ANY, "", wxDefaultPosition,
-                                  wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
-    labelField->SetBackgroundColour(wxColor(154,207,220));
-    auto labelPanelSizer = new wxBoxSizer(wxVERTICAL);
-    labelPanelSizer->Add(label, 0, wxEXPAND | wxALL);
-    labelPanelSizer->Add(labelField, 0, wxEXPAND | wxALL, FromDIP(20));
-    label->SetSizerAndFit(labelPanelSizer);
-}
-
-void MyPanel::OnClick(wxCommandEvent &e)
-{
-    std::cout << "PANEL OnClick, id = " << e.GetId() << std::endl;
-    dynamic_cast<wxPanel *>(e.GetEventObject())->SetBackgroundColour(wxColor(154,207,220));
-    e.Skip();
-}
-
-void MyPanel::OnSize(wxSizeEvent &e)
-{
-    std::cout << "PANEL OnSize. H = " << e.GetSize().GetHeight() << ", id = " << e.GetId() << std::endl;
-    e.Skip();
-}
-
-// clang-format off
-
-wxBEGIN_EVENT_TABLE(MyPanel, wxPanel)
-                EVT_BUTTON(wxID_ANY, MyPanel::OnClick)
-                EVT_SIZE(MyPanel::OnSize)
-wxEND_EVENT_TABLE()
-
-
-/*
-class MyFrame : public wxFrame
-{
-public:
-    MyFrame();
-
-private:
-    void OnHello(wxCommandEvent& event);
-    void OnExit(wxCommandEvent& event);
-    void OnAbout(wxCommandEvent& event);
-};
-
-enum
-{
-    ID_Hello = 1
-};
-
-wxIMPLEMENT_APP(MyApp);
-
-bool MyApp::OnInit()
-{
-    MyFrame *frame = new MyFrame();
-    frame->Show(true);
-    return true;
-}
-
-MyFrame::MyFrame()
-        : wxFrame(nullptr, wxID_ANY, "Hello World")
-{
-    wxMenu *menuFile = new wxMenu;
-    menuFile->Append(ID_Hello, "&Hello...\tCtrl-H",
-                     "Help string shown in status bar for this menu item");
-    menuFile->AppendSeparator();
-    menuFile->Append(wxID_EXIT);
-
-    wxMenu *menuHelp = new wxMenu;
-    menuHelp->Append(wxID_ABOUT);
-
-    wxMenuBar *menuBar = new wxMenuBar;
-    menuBar->Append(menuFile, "&File");
-    menuBar->Append(menuHelp, "&Help");
-
-    SetMenuBar( menuBar );
-
-    CreateStatusBar();
-    SetStatusText("Welcome to wxWidgets!");
-
-    Bind(wxEVT_MENU, &MyFrame::OnHello, this, ID_Hello);
-    Bind(wxEVT_MENU, &MyFrame::OnAbout, this, wxID_ABOUT);
-    Bind(wxEVT_MENU, &MyFrame::OnExit, this, wxID_EXIT);
-}
-
-void MyFrame::OnExit(wxCommandEvent& event)
-{
-    Close(true);
-}
-
-void MyFrame::OnAbout(wxCommandEvent& event)
-{
-    wxMessageBox("This is a wxWidgets Hello World example",
-                 "About Hello World", wxOK | wxICON_INFORMATION);
-}
-
-void MyFrame::OnHello(wxCommandEvent& event)
-{
-    wxLogMessage("Hello world from wxWidgets!");
-}
-*/
