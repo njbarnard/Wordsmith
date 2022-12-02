@@ -34,6 +34,13 @@ private:
 
 };
 
+enum ButtonId
+{
+    bannerID = wxID_LAST + 1, metronomeID, outputID, generateID, startsWithID, endsWithID,
+    containsID, lettersID, anagramID, lengthID, syllablesID, rhymesWithID, wordTypeID, checkBoxesID,
+    homophoneID, omitLettersID, synonymID, antonymID, wordListID
+};
+
 bool MyApp::OnInit() {
     MyFrame *frame = new MyFrame("Wordsmith", wxDefaultPosition, wxDefaultSize);
     frame->Show(true);
@@ -373,10 +380,23 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
 
 void MyFrame::OnSubmit(wxCommandEvent &e){
     std::cout << "[wxEVT_TEXT] Name Text: "<< e.GetString() << std::endl;
-    /*
-    if (e.GetString().length() == 0){
-        auto obj = e.GetEventObject();
-        obj->SetBackgroundColour(wxColor(154,207,220));
+    wxTextCtrl *wordBar = wxDynamicCast(e.GetEventObject(), wxTextCtrl);
+    wxPanel *p = wxDynamicCast(wordBar->GetParent(), wxPanel);
+    if (e.GetString().length() > 0) {
+        wordBar->SetBackgroundColour(wxColor(58, 175, 220));
+        p->SetBackgroundColour(wxColor(58, 175, 220));
+    } else {
+        wordBar->SetBackgroundColour(wxColor(154, 207, 220));
+        p->SetBackgroundColour(wxColor(154, 207, 220));
     }
-     */
+    Refresh();
+    e.Skip();
 }
+
+class MyPanel: public wxPanel
+{
+public:
+    void setTextCtrlText(const wxString &str) { m_textCtrl->ChangeValue(str); };
+private:
+    wxTextCtrl *m_textCtrl;
+};
