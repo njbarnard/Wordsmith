@@ -36,8 +36,8 @@ public:
 
 private:
     wxSizer *main_sizer, *top_banner_sizer, *body_sizer, *left_column_sizer, *middle_column_sizer,
-    *right_column_sizer, *middle_top_sizer, *middle_second_sizer, *middle_left_sizer, *middle_right_sizer,
-    *middle_bottom_chunk_sizer, *middle_right_top_sizer, *middle_right_bottom_sizer, *checkBoxes;
+    *right_column_sizer, *middle_first_sizer, *middle_second_sizer, *middle_third_sizer, *middle_third_left_sizer,
+    *middle_fourth_sizer, *middle_fifth_sizer;
 
     wxPanel *banner, *metronome, *output, *generate, *startsWith, *endsWith, *contains, *letters, *anagram,
     *palindrome, *kangarooWord, *compoundWord, *properNoun, *length, *syllables, *rhymesWith, *wordType,
@@ -45,8 +45,9 @@ private:
 
     wxListBox* wordList;
 
-    wxCheckBox* anagramCheckBox, *palindromeCheckBox, *kangarooWordCheckBox, *compoundWordCheckBox,
-    *properNounCheckBox;
+    wxCheckBox* anagramCheckBox;
+
+    wxCheckListBox *checkBoxes;
 
     wxButton* generateButton;
 
@@ -66,8 +67,8 @@ private:
 enum ButtonId
 {
     bannerID = wxID_LAST + 1, metronomeID, outputID, generateID, startsWithID, endsWithID, containsID,
-    lettersID, anagramID, palindromeID, kangarooWordID, compoundWordID, properNounID, lengthID, syllablesID,
-    rhymesWithID, wordTypeID, checkBoxesID, homophoneID, omitLettersID, synonymID, antonymID, wordListID
+    lettersID, anagramID, lengthID, syllablesID, rhymesWithID, wordTypeID, checkBoxesID, homophoneID,
+    omitLettersID, synonymID, antonymID, wordListID
 };
 
 bool MyApp::OnInit() {
@@ -333,12 +334,13 @@ void MyFrame::CreateGUI() {
     /** BUTTON **/
 
     //middle_column contains
-    middle_top_sizer = new wxBoxSizer (wxHORIZONTAL);
+    middle_first_sizer = new wxBoxSizer (wxHORIZONTAL);
     middle_second_sizer = new wxBoxSizer (wxHORIZONTAL);
-    middle_left_sizer = new wxBoxSizer (wxVERTICAL);
-    middle_right_sizer = new wxBoxSizer (wxVERTICAL);
+    middle_third_sizer = new wxBoxSizer (wxHORIZONTAL);
+    middle_fourth_sizer = new wxBoxSizer (wxHORIZONTAL);
+    middle_fifth_sizer = new wxBoxSizer (wxHORIZONTAL);
 
-    //middle_top contains
+    //middle_first contains
     startsWith = new wxPanel(this, startsWithID, wxDefaultPosition, wxDefaultSize);
     startsWith->SetBackgroundColour (wxColor(154, 207, 220));
 
@@ -414,7 +416,19 @@ void MyFrame::CreateGUI() {
     anagram->Disable();
     /** CHECK BOX **/
 
-    //middle_left contains
+    //middle_third contains
+    middle_third_left_sizer = new wxBoxSizer (wxVERTICAL);
+    checkBoxes = new wxCheckListBox(this, checkBoxesID, wxDefaultPosition, wxDefaultSize);
+    checkBoxes->Append("Palindrome");
+    checkBoxes->Append("Kangaroo Word\n(contains a word)");
+    checkBoxes->Append("Compound Word");
+    checkBoxes->Append("Proper Noun");
+    checkBoxes->Append("Long word list");
+    checkBoxes->Append("Perfect Rhyme");
+    checkBoxes->SetBackgroundColour(wxColor(154,207,220));
+    checkBoxes->SetFont(defaultFont);
+
+    //middle_third_left contains
     length = new wxPanel(this, lengthID, wxDefaultPosition, wxDefaultSize);
     length->SetBackgroundColour (wxColor(154,207,220));
 
@@ -445,6 +459,7 @@ void MyFrame::CreateGUI() {
     syllables->SetSizerAndFit(syllablesPanelSizer);
     /** TEXT LABEL **/
 
+    //middle_fourth contains
     rhymesWith = new wxPanel(this, rhymesWithID, wxDefaultPosition, wxDefaultSize);
     rhymesWith->SetBackgroundColour (wxColor(154,207,220));
 
@@ -460,17 +475,6 @@ void MyFrame::CreateGUI() {
     rhymesWith->SetSizerAndFit(rhymesWithPanelSizer);
     /** TEXT LABEL **/
 
-    wordType = new wxPanel(this, wordTypeID, wxDefaultPosition, wxDefaultSize);
-    wordType->SetBackgroundColour (wxColor(154,207,220));
-
-    //middle_right contains
-    checkBoxes = new wxBoxSizer (wxVERTICAL);
-    middle_right_top_sizer = new wxBoxSizer (wxHORIZONTAL);
-    middle_right_bottom_sizer = new wxBoxSizer (wxHORIZONTAL);
-
-
-
-    //middle_right_top contains
     homophone = new wxPanel(this, homophoneID, wxDefaultPosition, wxDefaultSize);
     homophone->SetBackgroundColour (wxColor(154,207,220));
 
@@ -501,7 +505,10 @@ void MyFrame::CreateGUI() {
     omitLetters->SetSizerAndFit(omitLettersPanelSizer);
     /** TEXT LABEL **/
 
-    //middle_right_bottom contains
+    //middle_fifth contains
+    wordType = new wxPanel(this, wordTypeID, wxDefaultPosition, wxDefaultSize);
+    wordType->SetBackgroundColour (wxColor(154,207,220));
+
     synonym = new wxPanel(this, synonymID, wxDefaultPosition, wxDefaultSize);
     synonym->SetBackgroundColour (wxColor(154,207,220));
 
@@ -540,6 +547,29 @@ void MyFrame::CreateGUI() {
 
 void MyFrame::CombineSizers(){
     /** MIDDLE **/
+    middle_third_left_sizer->Add(length, 1, wxEXPAND);
+    middle_third_left_sizer->Add(syllables, 1, wxEXPAND);
+
+    middle_first_sizer->Add(startsWith, 1, wxEXPAND);
+    middle_first_sizer->Add(endsWith, 1, wxEXPAND);
+    middle_first_sizer->Add(contains, 1, wxEXPAND);
+
+    middle_second_sizer->Add(letters, 2, wxEXPAND);
+    middle_second_sizer->Add(anagram, 1, wxEXPAND);
+
+    middle_third_sizer->Add(middle_third_left_sizer, 15, wxEXPAND);
+    middle_third_sizer->Add(checkBoxes, 20, wxEXPAND);
+
+    middle_fourth_sizer->Add(rhymesWith, 1, wxEXPAND);
+    middle_fourth_sizer->Add(homophone, 1, wxEXPAND);
+    middle_fourth_sizer->Add(omitLetters, 1, wxEXPAND);
+
+    middle_fifth_sizer->Add(wordType, 1, wxEXPAND);
+    middle_fifth_sizer->Add(synonym, 1, wxEXPAND);
+    middle_fifth_sizer->Add(antonym, 1, wxEXPAND);
+
+
+    /*
     middle_right_bottom_sizer->Add(synonym, 1, wxEXPAND);
     middle_right_bottom_sizer->Add(antonym, 1, wxEXPAND);
 
@@ -554,7 +584,6 @@ void MyFrame::CombineSizers(){
     //choices.push_back("Kangaroo Word\n(word containing a word)");
     //choices.push_back("Compound Word");
     //choices.push_back("Proper Noun");
-    wxString *const choices2 = nullptr;
     //choices2->insert(0,"Palindrone");
     wxCheckListBox* checkBoxes3 = new wxCheckListBox(this, checkBoxesID, wxDefaultPosition, wxDefaultSize);
     checkBoxes3->Append("Please");
@@ -579,20 +608,16 @@ void MyFrame::CombineSizers(){
     middle_left_sizer->Add(rhymesWith, 1, wxEXPAND);
     middle_left_sizer->Add(wordType, 1, wxEXPAND);
 
-    middle_second_sizer->Add(letters, 2, wxEXPAND);
-    middle_second_sizer->Add(anagram, 1, wxEXPAND);
-
-    middle_top_sizer->Add(startsWith, 1, wxEXPAND);
-    middle_top_sizer->Add(endsWith, 1, wxEXPAND);
-    middle_top_sizer->Add(contains, 1, wxEXPAND);
-
     middle_bottom_chunk_sizer = new wxBoxSizer (wxHORIZONTAL);
     middle_bottom_chunk_sizer->Add(middle_left_sizer, 1, wxEXPAND);
     middle_bottom_chunk_sizer->Add(middle_right_sizer, 2, wxEXPAND);
+    */
 
-    middle_column_sizer->Add(middle_top_sizer, 1, wxEXPAND);
+    middle_column_sizer->Add(middle_first_sizer, 1, wxEXPAND);
     middle_column_sizer->Add(middle_second_sizer, 1, wxEXPAND);
-    middle_column_sizer->Add(middle_bottom_chunk_sizer, 4, wxEXPAND);
+    middle_column_sizer->Add(middle_third_sizer, 2, wxEXPAND);
+    middle_column_sizer->Add(middle_fourth_sizer, 1, wxEXPAND);
+    middle_column_sizer->Add(middle_fifth_sizer, 1, wxEXPAND);
 
     /** LEFT **/
     left_column_sizer->Add(metronome, 28, wxEXPAND);
