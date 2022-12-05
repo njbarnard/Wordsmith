@@ -23,11 +23,23 @@ class MyFrame : public wxFrame{
 
 public:
     MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size);
-    void OnSubmit(wxCommandEvent &);
+    void OnType(wxCommandEvent &);
+    void CreateGUI();
+    void CombineSizers();
+    void BindEvents();
 
 private:
-    wxTextCtrl *bannerField, *startsWithField, *endsWithField, *containsField, *lettersField, *lengthField,
-    *syllablesField, *rhymesWithField, *homophoneField, *omitLettersField, *synonymField, *antonymField, *outputField;
+    wxSizer *main_sizer, *top_banner_sizer, *body_sizer, *left_column_sizer, *middle_column_sizer,
+    *right_column_sizer, *middle_top_sizer, *middle_second_sizer, *middle_left_sizer, *middle_right_sizer,
+    *middle_bottom_chunk_sizer, *middle_right_top_sizer, *middle_right_bottom_sizer;
+
+    wxPanel *banner, *metronome, *output, *generate, *startsWith, *endsWith, *contains, *letters, *anagram,
+    *length, *syllables, *rhymesWith, *wordType, *checkBoxes, *homophone, *omitLetters, *synonym, *antonym,
+    *wordList;
+
+    wxTextCtrl *startsWithField, *endsWithField, *containsField, *lettersField, *lengthField, *syllablesField,
+    *rhymesWithField, *homophoneField, *omitLettersField, *synonymField, *antonymField, *outputField;
+
     bool startsWithIsUsed, endsWithIsUsed, containsIsUsed, lettersIsUsed, anagramIsUsed, lengthIsUsed,
     syllablesIsUsed, rhymesWithIsUsed, wordTypeIsUsed, palindromeIsUsed, kangarooWordIsUsed, compoundWordIsUsed,
     properNounIsUsed, homophoneIsUsed, omitLettersIsUsed, synonymIsUsed, antonymIsUsed;
@@ -48,14 +60,26 @@ bool MyApp::OnInit() {
 }
 
 MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size): wxFrame(nullptr, wxID_ANY, title, pos, size){
-    wxSizer *main_sizer= new wxBoxSizer (wxVERTICAL);
+
+    CreateGUI();
+    CombineSizers();
+    BindEvents();
+
+}
+
+void MyFrame::BindEvents(){
+    startsWithField->Bind(wxEVT_TEXT, &MyFrame::OnType, this);
+}
+
+void MyFrame::CreateGUI() {
+    main_sizer = new wxBoxSizer (wxVERTICAL);
 
     //main_sizer contains
-    wxSizer *top_banner_sizer = new wxBoxSizer (wxHORIZONTAL);
-    wxSizer *body_sizer = new wxBoxSizer (wxHORIZONTAL);
+    top_banner_sizer = new wxBoxSizer (wxHORIZONTAL);
+    body_sizer = new wxBoxSizer (wxHORIZONTAL);
 
     //top_banner contains
-    wxPanel *banner = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    banner = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     banner->SetBackgroundColour (wxColor(239, 90, 103));
 
     /** TEXT LABEL **/
@@ -65,17 +89,15 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     auto bannerPanelSizer = new wxBoxSizer(wxVERTICAL);
     bannerPanelSizer->Add(bannerLabel, 1, wxALIGN_CENTER_HORIZONTAL);
     banner->SetSizerAndFit(bannerPanelSizer);
-    //auto bannerCenteringSizer = new wxBoxSizer(wxHORIZONTAL);
-    //bannerCenteringSizer->Add(banner, 1, wxEXPAND);
     /** TEXT LABEL **/
 
     //body contains
-    wxSizer *left_column_sizer = new wxBoxSizer (wxVERTICAL);
-    wxSizer *middle_column_sizer = new wxBoxSizer (wxVERTICAL);
-    wxSizer *right_column_sizer = new wxBoxSizer (wxVERTICAL);
+    left_column_sizer = new wxBoxSizer (wxVERTICAL);
+    middle_column_sizer = new wxBoxSizer (wxVERTICAL);
+    right_column_sizer = new wxBoxSizer (wxVERTICAL);
 
     //left_column contains
-    wxPanel *metronome = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    metronome = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     metronome->SetBackgroundColour (wxColor(153, 153, 153));
 
     /** TEXT LABEL **/
@@ -88,7 +110,7 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     metronome->SetSizerAndFit(metronomePanelSizer);
     /** TEXT LABEL **/
 
-    wxPanel *output = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    output = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     output->SetBackgroundColour (wxColor(198,227,114));
 
     /** TEXT LABEL **/
@@ -96,7 +118,7 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     wxFont outputFont(30, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTSTYLE_NORMAL);
     outputLabel->SetFont(outputFont);
     outputField = new wxTextCtrl(output, wxID_ANY, "", wxDefaultPosition,
-                                   wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+                                 wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     outputField->SetBackgroundColour(wxColor(198,227,114));
     auto outputPanelSizer = new wxBoxSizer(wxVERTICAL);
     outputPanelSizer->Add(outputLabel, 0, wxEXPAND | wxALL);
@@ -104,7 +126,7 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     output->SetSizerAndFit(outputPanelSizer);
     /** TEXT LABEL **/
 
-    wxPanel *generate = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    generate = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     generate->SetBackgroundColour (wxColor(198, 227, 114));
 
     /** BUTTON **/
@@ -117,20 +139,20 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     /** BUTTON **/
 
     //middle_column contains
-    wxSizer *middle_top_sizer = new wxBoxSizer (wxHORIZONTAL);
-    wxSizer *middle_second_sizer = new wxBoxSizer (wxHORIZONTAL);
-    wxSizer *middle_left_sizer = new wxBoxSizer (wxVERTICAL);
-    wxSizer *middle_right_sizer = new wxBoxSizer (wxVERTICAL);
+    middle_top_sizer = new wxBoxSizer (wxHORIZONTAL);
+    middle_second_sizer = new wxBoxSizer (wxHORIZONTAL);
+    middle_left_sizer = new wxBoxSizer (wxVERTICAL);
+    middle_right_sizer = new wxBoxSizer (wxVERTICAL);
 
     //middle_top contains
-    wxPanel *startsWith = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    startsWith = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     startsWith->SetBackgroundColour (wxColor(154, 207, 220));
 
     /** TEXT LABEL **/
     auto startsWithLabel = new wxStaticText(startsWith, wxID_ANY, "Starts With:");
     startsWithLabel->SetFont(startsWithFont);
     startsWithField = new wxTextCtrl(startsWith, wxID_ANY, "", wxDefaultPosition,
-                                 wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+                                     wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     startsWithField->SetBackgroundColour(wxColor(154,207,220));
     auto startsWithPanelSizer = new wxBoxSizer(wxVERTICAL);
     startsWithPanelSizer->Add(startsWithLabel, 0, wxEXPAND | wxALL);
@@ -138,14 +160,14 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     startsWith->SetSizerAndFit(startsWithPanelSizer);
     /** TEXT LABEL **/
 
-    wxPanel *endsWith = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    endsWith = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     endsWith->SetBackgroundColour (wxColor(154,207,220));
 
     /** TEXT LABEL **/
     auto endsWithLabel = new wxStaticText(endsWith, wxID_ANY, "Ends with:");
     endsWithLabel->SetFont(startsWithFont);
     endsWithField = new wxTextCtrl(endsWith, wxID_ANY, "", wxDefaultPosition,
-                                  wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+                                   wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     endsWithField->SetBackgroundColour(wxColor(154,207,220));
     auto endsWithPanelSizer = new wxBoxSizer(wxVERTICAL);
     endsWithPanelSizer->Add(endsWithLabel, 0, wxEXPAND | wxALL);
@@ -153,7 +175,7 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     endsWith->SetSizerAndFit(endsWithPanelSizer);
     /** TEXT LABEL **/
 
-    wxPanel *contains = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    contains = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     contains->SetBackgroundColour (wxColor(154,207,220));
 
     /** TEXT LABEL **/
@@ -169,14 +191,14 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     /** TEXT LABEL **/
 
     //middle_second contains
-    wxPanel *letters = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    letters = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     letters->SetBackgroundColour (wxColor(154,207,220));
 
     /** TEXT LABEL **/
     auto lettersLabel = new wxStaticText(letters, wxID_ANY, "Letters:");
     lettersLabel->SetFont(startsWithFont);
     lettersField = new wxTextCtrl(letters, wxID_ANY, "", wxDefaultPosition,
-                                   wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+                                  wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     lettersField->SetBackgroundColour(wxColor(154,207,220));
     auto lettersPanelSizer = new wxBoxSizer(wxVERTICAL);
     lettersPanelSizer->Add(lettersLabel, 0, wxEXPAND | wxALL);
@@ -184,18 +206,18 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     letters->SetSizerAndFit(lettersPanelSizer);
     /** TEXT LABEL **/
 
-    wxPanel *anagram = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    anagram = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     anagram->SetBackgroundColour (wxColor(154,207,220));
 
     //middle_left contains
-    wxPanel *length = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    length = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     length->SetBackgroundColour (wxColor(154,207,220));
 
     /** TEXT LABEL **/
     auto lengthLabel = new wxStaticText(length, wxID_ANY, "Length:");
     lengthLabel->SetFont(startsWithFont);
     lengthField = new wxTextCtrl(length, wxID_ANY, "", wxDefaultPosition,
-                                  wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+                                 wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     lengthField->SetBackgroundColour(wxColor(154,207,220));
     auto lengthPanelSizer = new wxBoxSizer(wxVERTICAL);
     lengthPanelSizer->Add(lengthLabel, 0, wxEXPAND | wxALL);
@@ -203,14 +225,14 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     length->SetSizerAndFit(lengthPanelSizer);
     /** TEXT LABEL **/
 
-    wxPanel *syllables = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    syllables = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     syllables->SetBackgroundColour (wxColor(154,207,220));
 
     /** TEXT LABEL **/
     auto syllablesLabel = new wxStaticText(syllables, wxID_ANY, "Syllables:");
     syllablesLabel->SetFont(startsWithFont);
     syllablesField = new wxTextCtrl(syllables, wxID_ANY, "", wxDefaultPosition,
-                                 wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+                                    wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     syllablesField->SetBackgroundColour(wxColor(154,207,220));
     auto syllablesPanelSizer = new wxBoxSizer(wxVERTICAL);
     syllablesPanelSizer->Add(syllablesLabel, 0, wxEXPAND | wxALL);
@@ -218,14 +240,14 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     syllables->SetSizerAndFit(syllablesPanelSizer);
     /** TEXT LABEL **/
 
-    wxPanel *rhymesWith = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    rhymesWith = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     rhymesWith->SetBackgroundColour (wxColor(154,207,220));
 
     /** TEXT LABEL **/
     auto rhymesWithLabel = new wxStaticText(rhymesWith, wxID_ANY, "Rhymes With:");
     rhymesWithLabel->SetFont(startsWithFont);
     rhymesWithField = new wxTextCtrl(rhymesWith, wxID_ANY, "", wxDefaultPosition,
-                                    wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+                                     wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     rhymesWithField->SetBackgroundColour(wxColor(154,207,220));
     auto rhymesWithPanelSizer = new wxBoxSizer(wxVERTICAL);
     rhymesWithPanelSizer->Add(rhymesWithLabel, 0, wxEXPAND | wxALL);
@@ -233,24 +255,24 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     rhymesWith->SetSizerAndFit(rhymesWithPanelSizer);
     /** TEXT LABEL **/
 
-    wxPanel *wordType = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    wordType = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     wordType->SetBackgroundColour (wxColor(154,207,220));
 
     //middle_right contains
-    wxPanel *checkBoxes = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    checkBoxes = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     checkBoxes->SetBackgroundColour (wxColor(154,207,220));
-    wxSizer *middle_right_top_sizer = new wxBoxSizer (wxHORIZONTAL);
-    wxSizer *middle_right_bottom_sizer = new wxBoxSizer (wxHORIZONTAL);
+    middle_right_top_sizer = new wxBoxSizer (wxHORIZONTAL);
+    middle_right_bottom_sizer = new wxBoxSizer (wxHORIZONTAL);
 
     //middle_right_top contains
-    wxPanel *homophone = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    homophone = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     homophone->SetBackgroundColour (wxColor(154,207,220));
 
     /** TEXT LABEL **/
     auto homophoneLabel = new wxStaticText(homophone, wxID_ANY, "Homophone:");
     homophoneLabel->SetFont(startsWithFont);
     homophoneField = new wxTextCtrl(homophone, wxID_ANY, "", wxDefaultPosition,
-                                     wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+                                    wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     homophoneField->SetBackgroundColour(wxColor(154,207,220));
     auto homophonePanelSizer = new wxBoxSizer(wxVERTICAL);
     homophonePanelSizer->Add(homophoneLabel, 0, wxEXPAND | wxALL);
@@ -258,14 +280,14 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     homophone->SetSizerAndFit(homophonePanelSizer);
     /** TEXT LABEL **/
 
-    wxPanel *omitLetters = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    omitLetters = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     omitLetters->SetBackgroundColour (wxColor(154,207,220));
 
     /** TEXT LABEL **/
     auto omitLettersLabel = new wxStaticText(omitLetters, wxID_ANY, "Omit Letters:");
     omitLettersLabel->SetFont(startsWithFont);
     omitLettersField = new wxTextCtrl(omitLetters, wxID_ANY, "", wxDefaultPosition,
-                                    wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+                                      wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     omitLettersField->SetBackgroundColour(wxColor(154,207,220));
     auto omitLettersPanelSizer = new wxBoxSizer(wxVERTICAL);
     omitLettersPanelSizer->Add(omitLettersLabel, 0, wxEXPAND | wxALL);
@@ -274,14 +296,14 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     /** TEXT LABEL **/
 
     //middle_right_bottom contains
-    wxPanel *synonym = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    synonym = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     synonym->SetBackgroundColour (wxColor(154,207,220));
 
     /** TEXT LABEL **/
     auto synonymLabel = new wxStaticText(synonym, wxID_ANY, "Synonym:");
     synonymLabel->SetFont(startsWithFont);
     synonymField = new wxTextCtrl(synonym, wxID_ANY, "", wxDefaultPosition,
-                                      wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+                                  wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     synonymField->SetBackgroundColour(wxColor(154,207,220));
     auto synonymPanelSizer = new wxBoxSizer(wxVERTICAL);
     synonymPanelSizer->Add(synonymLabel, 0, wxEXPAND | wxALL);
@@ -289,14 +311,14 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     synonym->SetSizerAndFit(synonymPanelSizer);
     /** TEXT LABEL **/
 
-    wxPanel *antonym = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    antonym = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     antonym->SetBackgroundColour (wxColor(154,207,220));
 
     /** TEXT LABEL **/
     auto antonymLabel = new wxStaticText(antonym, wxID_ANY, "Antonym:");
     antonymLabel->SetFont(startsWithFont);
     antonymField = new wxTextCtrl(antonym, wxID_ANY, "", wxDefaultPosition,
-                                      wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+                                  wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     antonymField->SetBackgroundColour(wxColor(154,207,220));
     auto antonymPanelSizer = new wxBoxSizer(wxVERTICAL);
     antonymPanelSizer->Add(antonymLabel, 0, wxEXPAND | wxALL);
@@ -305,11 +327,12 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     /** TEXT LABEL **/
 
     //right_column contains
-    wxPanel *wordList = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    wordList = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
     wordList->SetBackgroundColour (wxColor(254, 227, 126));
 
-    //COMBINATIONS:
+}
 
+void MyFrame::CombineSizers(){
     /** MIDDLE **/
     middle_right_bottom_sizer->Add(synonym, 1, wxEXPAND);
     middle_right_bottom_sizer->Add(antonym, 1, wxEXPAND);
@@ -333,7 +356,7 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     middle_top_sizer->Add(endsWith, 1, wxEXPAND);
     middle_top_sizer->Add(contains, 1, wxEXPAND);
 
-    wxSizer *middle_bottom_chunk_sizer = new wxBoxSizer (wxHORIZONTAL);
+    middle_bottom_chunk_sizer = new wxBoxSizer (wxHORIZONTAL);
     middle_bottom_chunk_sizer->Add(middle_left_sizer, 1, wxEXPAND);
     middle_bottom_chunk_sizer->Add(middle_right_sizer, 2, wxEXPAND);
 
@@ -362,23 +385,9 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     main_sizer->Add(body_sizer, 540, wxEXPAND);
 
     this->SetSizerAndFit (main_sizer);
-
-    //ADDING EVENTS
-
-    wxPanel *transferVar = dynamic_cast<wxPanel *>(startsWithField->GetParent());
-    startsWithField->Bind(wxEVT_TEXT, &MyFrame::OnSubmit, this);
-    //startsWithField->Bind(wxEVT_BUTTON, [](wxCommandEvent &e){
-
-    //    });
-    /*
-    startsWithField->SetValidator(wxTextValidator (wxFILTER_NONE, &name));
-    //name = "John Doe";
-    TransferDataToWindow();
-    */
-
 }
 
-void MyFrame::OnSubmit(wxCommandEvent &e){
+void MyFrame::OnType(wxCommandEvent &e){
     std::cout << "[wxEVT_TEXT] Name Text: "<< e.GetString() << std::endl;
     wxTextCtrl *wordBar = wxDynamicCast(e.GetEventObject(), wxTextCtrl);
     wxPanel *p = wxDynamicCast(wordBar->GetParent(), wxPanel);
