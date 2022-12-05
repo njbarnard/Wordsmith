@@ -57,6 +57,8 @@ private:
 
     wxSlider *lengthSlider, *syllablesSlider;
 
+    wxChoice *wordTypeChoice;
+
     int checkCount, lengthVal, syllablesVal;
 
     wxTextCtrl *startsWithField, *endsWithField, *containsField, *lettersField, *syllablesField,
@@ -366,33 +368,33 @@ void MyFrame::OnButtonClicked(wxCommandEvent &e){
 void MyFrame::CreateGUI() {
     main_sizer = new wxBoxSizer (wxVERTICAL);
 
-    //main_sizer contains
+    /** MAIN CONTAINS **/
     top_banner_sizer = new wxBoxSizer (wxHORIZONTAL);
     body_sizer = new wxBoxSizer (wxHORIZONTAL);
 
-    //top_banner contains
+    /** TOP_BANNER CONTAINS **/
     banner = new wxPanel(this, bannerID, wxDefaultPosition, wxDefaultSize);
     banner->SetBackgroundColour (wxColor(239, 90, 103));
 
-    /** TEXT LABEL **/
+    //--BANNER TEXT FIELD--//
     auto bannerLabel = new wxStaticText(banner, wxID_ANY, "Wordsmith");
     wxFont bannerFont(100, wxFONTFAMILY_DECORATIVE, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
     bannerLabel->SetFont(bannerFont);
     auto bannerPanelSizer = new wxBoxSizer(wxVERTICAL);
     bannerPanelSizer->Add(bannerLabel, 1, wxALIGN_CENTER_HORIZONTAL);
     banner->SetSizerAndFit(bannerPanelSizer);
-    /** TEXT LABEL **/
+    //--BANNER TEXT FIELD--//
 
-    //body contains
+    /** BODY CONTAINS **/
     left_column_sizer = new wxBoxSizer (wxVERTICAL);
     middle_column_sizer = new wxBoxSizer (wxVERTICAL);
     right_column_sizer = new wxBoxSizer (wxVERTICAL);
 
-    //left_column contains
+    /** LEFT_COLUMN CONTAINS **/
     metronome = new wxPanel(this, metronomeID, wxDefaultPosition, wxDefaultSize);
     metronome->SetBackgroundColour (wxColor(153, 153, 153));
 
-    /** TEXT LABEL **/
+    //--METRONOME TEXT LABEL--//
     auto metronomeLabel = new wxStaticText(metronome, wxID_ANY, "\n\n     Insert\nMetronome\n     Here");
     wxFont metronomeFont(40, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTSTYLE_NORMAL);
     metronomeLabel->SetFont(metronomeFont);
@@ -400,13 +402,13 @@ void MyFrame::CreateGUI() {
     auto metronomePanelSizer = new wxBoxSizer(wxVERTICAL);
     metronomePanelSizer->Add(metronomeLabel, 1, wxALIGN_CENTER_HORIZONTAL | wxALL, FromDIP(45));
     metronome->SetSizerAndFit(metronomePanelSizer);
-    /** TEXT LABEL **/
+    //--METRONOME TEXT LABEL--//
 
     output = new wxPanel(this, outputID, wxDefaultPosition, wxDefaultSize);
     output->SetBackgroundColour (wxColor(198,227,114));
 
-    /** TEXT LABEL **/
-    auto outputLabel = new wxStaticText(output, wxID_ANY, "Output to file:");
+    //--OUTPUT TEXT FIELD--//
+    auto outputLabel = new wxStaticText(output, wxID_ANY, " Output to file:");
     wxFont outputFont(30, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTSTYLE_NORMAL);
     outputLabel->SetFont(outputFont);
     outputField = new wxTextCtrl(output, wxID_ANY, "", wxDefaultPosition,
@@ -416,32 +418,32 @@ void MyFrame::CreateGUI() {
     outputPanelSizer->Add(outputLabel, 0, wxEXPAND | wxALL);
     outputPanelSizer->Add(outputField, 0, wxEXPAND | wxALL, FromDIP(20));
     output->SetSizerAndFit(outputPanelSizer);
-    /** TEXT LABEL **/
+    //--OUTPUT TEXT FIELD--//
 
     generate = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
     generate->SetBackgroundColour (wxColor(198, 227, 114));
 
-    /** BUTTON **/
+    //--GENERATE BUTTON--//
     generateButton = new wxButton(generate, wxID_ANY, "GENERATE", wxDefaultPosition, wxDefaultSize);
     generateButton->SetBackgroundColour(wxColor(198,227,114));
     generateButton->SetForegroundColour(wxColor(198,227,114));
     auto generatePanelSizer = new wxBoxSizer(wxVERTICAL);
     generatePanelSizer->Add(generateButton, 1, wxALIGN_CENTER_HORIZONTAL);
     generate->SetSizerAndFit(generatePanelSizer);
-    /** BUTTON **/
+    //--GENERATE BUTTON--//
 
-    //middle_column contains
+    /** MIDDLE_COLUMN CONTAINS **/
     middle_first_sizer = new wxBoxSizer (wxHORIZONTAL);
     middle_second_sizer = new wxBoxSizer (wxHORIZONTAL);
     middle_third_sizer = new wxBoxSizer (wxHORIZONTAL);
     middle_fourth_sizer = new wxBoxSizer (wxHORIZONTAL);
     middle_fifth_sizer = new wxBoxSizer (wxHORIZONTAL);
 
-    //middle_first contains
+    /** MIDDLE_FIRST CONTAINS **/
     startsWith = new wxPanel(this, startsWithID, wxDefaultPosition, wxDefaultSize);
     startsWith->SetBackgroundColour (wxColor(154, 207, 220));
 
-    /** TEXT LABEL **/
+    //--STARTS WITH TEXT FIELD--//
     auto startsWithLabel = new wxStaticText(startsWith, wxID_ANY, " Starts with:");
     startsWithLabel->SetFont(defaultFont);
     startsWithField = new wxTextCtrl(startsWith, wxID_ANY, "", wxDefaultPosition,
@@ -451,12 +453,12 @@ void MyFrame::CreateGUI() {
     startsWithPanelSizer->Add(startsWithLabel, 0, wxEXPAND | wxALL);
     startsWithPanelSizer->Add(startsWithField, 0, wxEXPAND | wxALL, FromDIP(20));
     startsWith->SetSizerAndFit(startsWithPanelSizer);
-    /** TEXT LABEL **/
+    //--STARTS WITH TEXT FIELD--//
 
     endsWith = new wxPanel(this, endsWithID, wxDefaultPosition, wxDefaultSize);
     endsWith->SetBackgroundColour (wxColor(154,207,220));
 
-    /** TEXT LABEL **/
+    //--ENDS WITH TEXT FIELD--//
     auto endsWithLabel = new wxStaticText(endsWith, wxID_ANY, " Ends with:     ");
     endsWithLabel->SetFont(defaultFont);
     endsWithField = new wxTextCtrl(endsWith, wxID_ANY, "", wxDefaultPosition,
@@ -466,12 +468,12 @@ void MyFrame::CreateGUI() {
     endsWithPanelSizer->Add(endsWithLabel, 0, wxEXPAND | wxALL);
     endsWithPanelSizer->Add(endsWithField, 0, wxEXPAND | wxALL, FromDIP(20));
     endsWith->SetSizerAndFit(endsWithPanelSizer);
-    /** TEXT LABEL **/
+    //--ENDS WITH TEXT FIELD--//
 
     contains = new wxPanel(this, containsID, wxDefaultPosition, wxDefaultSize);
     contains->SetBackgroundColour (wxColor(154,207,220));
 
-    /** TEXT LABEL **/
+    //--CONTAINS TEXT FIELD--//
     auto containsLabel = new wxStaticText(contains, wxID_ANY, " Contains:");
     containsLabel->SetFont(defaultFont);
     containsField = new wxTextCtrl(contains, wxID_ANY, "", wxDefaultPosition,
@@ -481,13 +483,13 @@ void MyFrame::CreateGUI() {
     containsPanelSizer->Add(containsLabel, 0, wxEXPAND | wxALL);
     containsPanelSizer->Add(containsField, 0, wxEXPAND | wxALL, FromDIP(20));
     endsWith->SetSizerAndFit(containsPanelSizer);
-    /** TEXT LABEL **/
+    //--CONTAINS TEXT FIELD--//
 
-    //middle_second contains
+    /** MIDDLE_SECOND CONTAINS **/
     letters = new wxPanel(this, lettersID, wxDefaultPosition, wxDefaultSize);
     letters->SetBackgroundColour (wxColor(154,207,220));
 
-    /** TEXT LABEL **/
+    //--LETTERS TEXT FIELD--//
     auto lettersLabel = new wxStaticText(letters, wxID_ANY, " Letters:");
     lettersLabel->SetFont(defaultFont);
     lettersField = new wxTextCtrl(letters, wxID_ANY, "", wxDefaultPosition,
@@ -497,12 +499,12 @@ void MyFrame::CreateGUI() {
     lettersPanelSizer->Add(lettersLabel, 0, wxEXPAND | wxALL);
     lettersPanelSizer->Add(lettersField, 0, wxEXPAND | wxALL, FromDIP(20));
     letters->SetSizerAndFit(lettersPanelSizer);
-    /** TEXT LABEL **/
+    //--LETTERS TEXT FIELD--//
 
     anagram = new wxPanel(this, anagramID, wxDefaultPosition, wxDefaultSize);
     anagram->SetBackgroundColour (wxColor(154,207,220));
 
-    /** CHECK BOX **/
+    //--ANAGRAM CHECK BOX--//
     anagramCheckBox = new wxCheckBox(anagram, wxID_ANY, "Anagram", wxDefaultPosition,
                                   wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     anagramCheckBox->SetBackgroundColour(wxColor(154,207,220));
@@ -511,13 +513,14 @@ void MyFrame::CreateGUI() {
     anagramPanelSizer->Add(anagramCheckBox, 0, wxEXPAND | wxALL, FromDIP(20));
     anagram->SetSizerAndFit(anagramPanelSizer);
     anagram->Disable();
-    //
-    /** CHECK BOX **/
+    //--ANAGRAM CHECK BOX--//
 
-    //middle_third contains
+    /** MIDDLE_THIRD CONTAINS **/
     middle_third_left_sizer = new wxBoxSizer (wxVERTICAL);
     checkBoxesPanel = new wxPanel(this, checkBoxesPanelID, wxDefaultPosition, wxDefaultSize);
     checkBoxesPanel->SetBackgroundColour (wxColor(154,207,220));
+
+    //--CHECKBOXES--//
     checkBoxes = new wxCheckListBox(this, checkBoxesID, wxDefaultPosition,
                                     wxSize(FromDIP(5), wxDefaultSize.GetHeight()));
     checkBoxes->Append("Palindrome");
@@ -532,13 +535,13 @@ void MyFrame::CreateGUI() {
     checkBoxesSizer = new wxBoxSizer (wxVERTICAL);
     checkBoxesSizer->Add(checkBoxes, 100, wxEXPAND);
     checkBoxesSizer->Add(checkBoxesPanel, 26, wxEXPAND);
-    //checkBoxes->Ens
+    //--CHECKBOXES--//
 
-    //middle_third_left contains
+    /** MIDDLE_THIRD_LEFT CONTAINS **/
     length = new wxPanel(this, lengthID, wxDefaultPosition, wxDefaultSize);
     length->SetBackgroundColour (wxColor(154,207,220));
 
-    /** TEXT LABEL **/
+    //--LENGTH SLIDER--//
     auto lengthLabel = new wxStaticText(length, wxID_ANY, " Length:");
     lengthLabel->SetFont(defaultFont);
     lengthSlider = new wxSlider(length, wxID_ANY, 1, 0, 30, wxDefaultPosition,
@@ -550,12 +553,12 @@ void MyFrame::CreateGUI() {
     lengthPanelSizer->Add(lengthLabel, 0, wxEXPAND | wxALL);
     lengthPanelSizer->Add(lengthSlider, 0, wxEXPAND | wxALL, FromDIP(25));
     length->SetSizerAndFit(lengthPanelSizer);
-    /** TEXT LABEL **/
+    //--LENGTH SLIDER--//
 
     syllables = new wxPanel(this, syllablesID, wxDefaultPosition, wxDefaultSize);
     syllables->SetBackgroundColour (wxColor(154,207,220));
 
-    /** TEXT LABEL **/
+    //--SYLLABLES SLIDER--//
     auto syllablesLabel = new wxStaticText(syllables, wxID_ANY, " Syllables:");
     syllablesLabel->SetFont(defaultFont);
     syllablesSlider = new wxSlider(syllables, wxID_ANY, 1, 0, 10, wxDefaultPosition,
@@ -567,13 +570,13 @@ void MyFrame::CreateGUI() {
     syllablesPanelSizer->Add(syllablesLabel, 0, wxEXPAND | wxALL);
     syllablesPanelSizer->Add(syllablesSlider, 0, wxEXPAND | wxALL, FromDIP(25));
     syllables->SetSizerAndFit(syllablesPanelSizer);
-    /** TEXT LABEL **/
+    //--SYLLABLES SLIDER--//
 
-    //middle_fourth contains
+    /** MIDDLE_FOURTH CONTAINS **/
     rhymesWith = new wxPanel(this, rhymesWithID, wxDefaultPosition, wxDefaultSize);
     rhymesWith->SetBackgroundColour (wxColor(154,207,220));
 
-    /** TEXT LABEL **/
+    //--RHYMES WITH TEXT FIELD--//
     auto rhymesWithLabel = new wxStaticText(rhymesWith, wxID_ANY, " Rhymes with:");
     rhymesWithLabel->SetFont(defaultMediumFont);
     rhymesWithField = new wxTextCtrl(rhymesWith, wxID_ANY, "", wxDefaultPosition,
@@ -583,12 +586,12 @@ void MyFrame::CreateGUI() {
     rhymesWithPanelSizer->Add(rhymesWithLabel, 0, wxEXPAND | wxALL);
     rhymesWithPanelSizer->Add(rhymesWithField, 0, wxEXPAND | wxALL, FromDIP(20));
     rhymesWith->SetSizerAndFit(rhymesWithPanelSizer);
-    /** TEXT LABEL **/
+    //--RHYMES WITH TEXT FIELD--//
 
     homophone = new wxPanel(this, homophoneID, wxDefaultPosition, wxDefaultSize);
     homophone->SetBackgroundColour (wxColor(154,207,220));
 
-    /** TEXT LABEL **/
+    //--HOMOPHONE TEXT FIELD--//
     auto homophoneLabel = new wxStaticText(homophone, wxID_ANY, " Homophone:");
     homophoneLabel->SetFont(defaultMediumFont);
     homophoneField = new wxTextCtrl(homophone, wxID_ANY, "", wxDefaultPosition,
@@ -598,12 +601,12 @@ void MyFrame::CreateGUI() {
     homophonePanelSizer->Add(homophoneLabel, 0, wxEXPAND | wxALL);
     homophonePanelSizer->Add(homophoneField, 0, wxEXPAND | wxALL, FromDIP(20));
     homophone->SetSizerAndFit(homophonePanelSizer);
-    /** TEXT LABEL **/
+    //--HOMOPHONE TEXT FIELD--//
 
     omitLetters = new wxPanel(this, omitLettersID, wxDefaultPosition, wxDefaultSize);
     omitLetters->SetBackgroundColour (wxColor(154,207,220));
 
-    /** TEXT LABEL **/
+    //--OMIT LETTERS TEXT FIELD--//
     auto omitLettersLabel = new wxStaticText(omitLetters, wxID_ANY, " Omit Letters:");
     omitLettersLabel->SetFont(defaultMediumFont);
     omitLettersField = new wxTextCtrl(omitLetters, wxID_ANY, "", wxDefaultPosition,
@@ -613,16 +616,35 @@ void MyFrame::CreateGUI() {
     omitLettersPanelSizer->Add(omitLettersLabel, 0, wxEXPAND | wxALL);
     omitLettersPanelSizer->Add(omitLettersField, 0, wxEXPAND | wxALL, FromDIP(20));
     omitLetters->SetSizerAndFit(omitLettersPanelSizer);
-    /** TEXT LABEL **/
+    //--OMIT LETTERS TEXT FIELD--//
 
-    //middle_fifth contains
+    /** MIDDLE_FIFTH CONTAINS **/
     wordType = new wxPanel(this, wordTypeID, wxDefaultPosition, wxDefaultSize);
     wordType->SetBackgroundColour (wxColor(154,207,220));
+
+    //--WORD TYPE CHOICE--//
+    auto wordTypeLabel = new wxStaticText(wordType, wxID_ANY, " Word Type:");
+    wordTypeLabel->SetFont(defaultMediumFont);
+    wordTypeChoice = new wxChoice(wordType, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    wordTypeChoice->Append("");
+    wordTypeChoice->Append("Noun");
+    wordTypeChoice->Append("Verb");
+    wordTypeChoice->Append("Adjective");
+    wordTypeChoice->Append("Adverb");
+    wordTypeChoice->Append("Pronoun");
+    wordTypeChoice->Append("Preposition");
+    wordTypeChoice->Append("Conjunction");
+    wordTypeChoice->SetBackgroundColour(wxColor(154,207,220));
+    auto wordTypePanelSizer = new wxBoxSizer(wxVERTICAL);
+    wordTypePanelSizer->Add(wordTypeLabel, 0, wxEXPAND | wxALL);
+    wordTypePanelSizer->Add(wordTypeChoice, 0, wxEXPAND | wxALL, FromDIP(25));
+    wordType->SetSizerAndFit(wordTypePanelSizer);
+    //--WORD TYPE CHOICE--//
 
     synonym = new wxPanel(this, synonymID, wxDefaultPosition, wxDefaultSize);
     synonym->SetBackgroundColour (wxColor(154,207,220));
 
-    /** TEXT LABEL **/
+    //--SYNONYM TEXT FIELD--//
     auto synonymLabel = new wxStaticText(synonym, wxID_ANY, " Synonym:");
     synonymLabel->SetFont(defaultMediumFont);
     synonymField = new wxTextCtrl(synonym, wxID_ANY, "", wxDefaultPosition,
@@ -632,12 +654,12 @@ void MyFrame::CreateGUI() {
     synonymPanelSizer->Add(synonymLabel, 0, wxEXPAND | wxALL);
     synonymPanelSizer->Add(synonymField, 0, wxEXPAND | wxALL, FromDIP(20));
     synonym->SetSizerAndFit(synonymPanelSizer);
-    /** TEXT LABEL **/
+    //--SYNONYM TEXT FIELD--//
 
     antonym = new wxPanel(this, antonymID, wxDefaultPosition, wxDefaultSize);
     antonym->SetBackgroundColour (wxColor(154,207,220));
 
-    /** TEXT LABEL **/
+    //--ANTONYM TEXT FIELD--//
     auto antonymLabel = new wxStaticText(antonym, wxID_ANY, " Antonym:");
     antonymLabel->SetFont(defaultMediumFont);
     antonymField = new wxTextCtrl(antonym, wxID_ANY, "", wxDefaultPosition,
@@ -647,25 +669,26 @@ void MyFrame::CreateGUI() {
     antonymPanelSizer->Add(antonymLabel, 0, wxEXPAND | wxALL);
     antonymPanelSizer->Add(antonymField, 0, wxEXPAND | wxALL, FromDIP(20));
     antonym->SetSizerAndFit(antonymPanelSizer);
-    /** TEXT LABEL **/
+    //--ANTONYM TEXT FIELD--//
 
-    //right_column contains
+    /** RIGHT_COLUMN CONTAINS **/
     wordList = new wxListBox(this, wordListID,wxDefaultPosition, wxDefaultSize);
     wordList->SetBackgroundColour (wxColor(254, 227, 126));
 
 }
 
 void MyFrame::CombineSizers(){
-    /** MIDDLE **/
-    middle_third_left_sizer->Add(length, 1, wxEXPAND);
-    middle_third_left_sizer->Add(syllables, 1, wxEXPAND);
 
+    /** MIDDLE **/
     middle_first_sizer->Add(startsWith, 1, wxEXPAND);
     middle_first_sizer->Add(endsWith, 1, wxEXPAND);
     middle_first_sizer->Add(contains, 1, wxEXPAND);
 
     middle_second_sizer->Add(letters, 2, wxEXPAND);
     middle_second_sizer->Add(anagram, 1, wxEXPAND);
+
+    middle_third_left_sizer->Add(length, 1, wxEXPAND);
+    middle_third_left_sizer->Add(syllables, 1, wxEXPAND);
 
     middle_third_sizer->Add(middle_third_left_sizer, 20, wxEXPAND);
     middle_third_sizer->Add(checkBoxesSizer, 15, wxEXPAND);
@@ -700,7 +723,7 @@ void MyFrame::CombineSizers(){
     /** TOP BANNER **/
     top_banner_sizer->Add(banner, 1, wxEXPAND);
 
-    /** MAIN SIZER **/
+    /** MAIN **/
     main_sizer->Add(top_banner_sizer, 65, wxEXPAND);
     main_sizer->Add(body_sizer, 540, wxEXPAND);
 
