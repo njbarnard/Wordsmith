@@ -23,8 +23,9 @@ class MyFrame : public wxFrame{
 
 public:
     MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size);
-    void OnTyping(wxCommandEvent &);
-    void OnOutputTyping(wxCommandEvent &);
+    void OnTyping(wxCommandEvent &e);
+    void OnOutputTyping(wxCommandEvent &e);
+    void OnButtonClicked(wxCommandEvent &e);
     void CreateGUI();
     void CombineSizers();
     void BindEvents();
@@ -37,8 +38,11 @@ private:
     *middle_bottom_chunk_sizer, *middle_right_top_sizer, *middle_right_bottom_sizer;
 
     wxPanel *banner, *metronome, *output, *generate, *startsWith, *endsWith, *contains, *letters, *anagram,
-    *length, *syllables, *rhymesWith, *wordType, *checkBoxes, *homophone, *omitLetters, *synonym, *antonym,
-    *wordList;
+    *length, *syllables, *rhymesWith, *wordType, *checkBoxes, *homophone, *omitLetters, *synonym, *antonym;
+
+    wxListBox* wordList;
+
+    wxButton* generateButton;
 
     wxTextCtrl *startsWithField, *endsWithField, *containsField, *lettersField, *lengthField, *syllablesField,
     *rhymesWithField, *homophoneField, *omitLettersField, *synonymField, *antonymField, *outputField;
@@ -76,8 +80,9 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
 }
 
 void MyFrame::BindEvents(){
+    generate->Bind(wxEVT_BUTTON, &MyFrame::OnButtonClicked, this);
     output->Bind(wxEVT_TEXT, &MyFrame::OnOutputTyping, this);
-    startsWithField->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
+    startsWith->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
     endsWith->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
     contains->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
     letters->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
@@ -232,6 +237,11 @@ void MyFrame::OnOutputTyping(wxCommandEvent &e){
     e.Skip();
 }
 
+void MyFrame::OnButtonClicked(wxCommandEvent &e){
+    wordList->AppendString(startsWithString);
+    e.Skip();
+}
+
 void MyFrame::CreateGUI() {
     main_sizer = new wxBoxSizer (wxVERTICAL);
 
@@ -291,7 +301,7 @@ void MyFrame::CreateGUI() {
     generate->SetBackgroundColour (wxColor(198, 227, 114));
 
     /** BUTTON **/
-    wxButton* generateButton = new wxButton(generate, wxID_ANY, "GENERATE", wxDefaultPosition, wxDefaultSize);
+    generateButton = new wxButton(generate, wxID_ANY, "GENERATE", wxDefaultPosition, wxDefaultSize);
     generateButton->SetBackgroundColour(wxColor(198,227,114));
     generateButton->SetForegroundColour(wxColor(198,227,114));
     auto generatePanelSizer = new wxBoxSizer(wxVERTICAL);
@@ -488,7 +498,7 @@ void MyFrame::CreateGUI() {
     /** TEXT LABEL **/
 
     //right_column contains
-    wordList = new wxPanel(this, wordListID, wxDefaultPosition, wxDefaultSize);
+    wordList = new wxListBox(this, wordListID,wxDefaultPosition, wxDefaultSize);
     wordList->SetBackgroundColour (wxColor(254, 227, 126));
 
 }
