@@ -9,7 +9,7 @@
 #include "mainWindow.h"
 #endif
 
-wxFont startsWithFont(30, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTSTYLE_NORMAL);
+wxFont defaultFont(30, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTSTYLE_NORMAL);
 
 class MyApp : public wxApp
 {
@@ -26,21 +26,27 @@ public:
     void OnTyping(wxCommandEvent &e);
     void OnOutputTyping(wxCommandEvent &e);
     void OnButtonClicked(wxCommandEvent &e);
+    void OnBoxChecked(wxCommandEvent &e);
     void CreateGUI();
     void CombineSizers();
     void BindEvents();
     void InitializeBools();
     void SetValues(int ID, const std::string& text);
+    void SetValues(int ID, bool val);
 
 private:
     wxSizer *main_sizer, *top_banner_sizer, *body_sizer, *left_column_sizer, *middle_column_sizer,
     *right_column_sizer, *middle_top_sizer, *middle_second_sizer, *middle_left_sizer, *middle_right_sizer,
-    *middle_bottom_chunk_sizer, *middle_right_top_sizer, *middle_right_bottom_sizer;
+    *middle_bottom_chunk_sizer, *middle_right_top_sizer, *middle_right_bottom_sizer, *checkBoxes;
 
     wxPanel *banner, *metronome, *output, *generate, *startsWith, *endsWith, *contains, *letters, *anagram,
-    *length, *syllables, *rhymesWith, *wordType, *checkBoxes, *homophone, *omitLetters, *synonym, *antonym;
+    *palindrome, *kangarooWord, *compoundWord, *properNoun, *length, *syllables, *rhymesWith, *wordType,
+    *homophone, *omitLetters, *synonym, *antonym;
 
     wxListBox* wordList;
+
+    wxCheckBox* anagramCheckBox, *palindromeCheckBox, *kangarooWordCheckBox, *compoundWordCheckBox,
+    *properNounCheckBox;
 
     wxButton* generateButton;
 
@@ -59,9 +65,9 @@ private:
 
 enum ButtonId
 {
-    bannerID = wxID_LAST + 1, metronomeID, outputID, generateID, startsWithID, endsWithID,
-    containsID, lettersID, anagramID, lengthID, syllablesID, rhymesWithID, wordTypeID, checkBoxesID,
-    homophoneID, omitLettersID, synonymID, antonymID, wordListID
+    bannerID = wxID_LAST + 1, metronomeID, outputID, generateID, startsWithID, endsWithID, containsID,
+    lettersID, anagramID, palindromeID, kangarooWordID, compoundWordID, properNounID, lengthID, syllablesID,
+    rhymesWithID, wordTypeID, checkBoxesID, homophoneID, omitLettersID, synonymID, antonymID, wordListID
 };
 
 bool MyApp::OnInit() {
@@ -93,22 +99,17 @@ void MyFrame::BindEvents(){
     omitLetters->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
     synonym->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
     antonym->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
+    anagram->Bind(wxEVT_CHECKBOX, &MyFrame::OnBoxChecked, this);
 }
 
 void MyFrame::SetValues(int ID, const std::string& text){
 
     switch(ID){
-        case bannerID:
-            break;
-        case metronomeID:
-            break;
         case outputID:
             if (text.length() > 0) {
                 outputString = text;
                 outputIsUsed = true;
             } else outputIsUsed = false;
-            break;
-        case generateID:
             break;
         case startsWithID:
             if (text.length() > 0) {
@@ -132,13 +133,8 @@ void MyFrame::SetValues(int ID, const std::string& text){
             if (text.length() > 0) {
                 lettersString = text;
                 lettersIsUsed = true;
-            } else lettersIsUsed = false;
-            break;
-        case anagramID:
-            if (text.length() > 0) {
-                anagramString = text;
-                anagramIsUsed = true;
-            } else anagramIsUsed = false;
+                if (!anagram->IsEnabled()) anagram->Enable();
+            } else {lettersIsUsed = false; anagram->Disable();}
             break;
         case lengthID:
             if (text.length() > 0) {
@@ -164,8 +160,6 @@ void MyFrame::SetValues(int ID, const std::string& text){
                 wordTypeIsUsed = true;
             } else wordTypeIsUsed = false;
             break;
-        case checkBoxesID:
-            break;
         case homophoneID:
             if (text.length() > 0) {
                 homophoneString = text;
@@ -190,10 +184,21 @@ void MyFrame::SetValues(int ID, const std::string& text){
                 antonymIsUsed = true;
             } else antonymIsUsed = false;
             break;
-        case wordListID:
+        default:
+            std::cout << "Error in SetValues() !" << std::endl;
+            break;
+    }
+}
+
+void MyFrame::SetValues(int ID, bool val){
+
+    switch(ID){
+        case anagramID:
+            if (val) anagramIsUsed = true;
+            else anagramIsUsed = false;
             break;
         default:
-            std::cout << "Error in SetTextValues() !" << std::endl;
+            std::cout << "Error in SetValues() !" << std::endl;
             break;
     }
 
@@ -232,6 +237,24 @@ void MyFrame::OnOutputTyping(wxCommandEvent &e){
     }
 
     SetValues(panel->GetId(), e.GetString().ToStdString());
+
+    Refresh();
+    e.Skip();
+}
+
+void MyFrame::OnBoxChecked(wxCommandEvent &e){
+    wxCheckBox* checkBox = wxDynamicCast(e.GetEventObject(), wxCheckBox);
+    wxPanel *panel = wxDynamicCast(checkBox->GetParent(), wxPanel);
+
+    if (e.IsChecked()) {
+        checkBox->SetBackgroundColour(wxColor(58, 175, 220));
+        panel->SetBackgroundColour(wxColor(58, 175, 220));
+    } else {
+        checkBox->SetBackgroundColour(wxColor(154, 207, 220));
+        panel->SetBackgroundColour(wxColor(154, 207, 220));
+    }
+
+    SetValues(panel->GetId(), "");
 
     Refresh();
     e.Skip();
@@ -321,7 +344,7 @@ void MyFrame::CreateGUI() {
 
     /** TEXT LABEL **/
     auto startsWithLabel = new wxStaticText(startsWith, wxID_ANY, "Starts With:");
-    startsWithLabel->SetFont(startsWithFont);
+    startsWithLabel->SetFont(defaultFont);
     startsWithField = new wxTextCtrl(startsWith, wxID_ANY, "", wxDefaultPosition,
                                      wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     startsWithField->SetBackgroundColour(wxColor(154,207,220));
@@ -336,7 +359,7 @@ void MyFrame::CreateGUI() {
 
     /** TEXT LABEL **/
     auto endsWithLabel = new wxStaticText(endsWith, wxID_ANY, "Ends with:");
-    endsWithLabel->SetFont(startsWithFont);
+    endsWithLabel->SetFont(defaultFont);
     endsWithField = new wxTextCtrl(endsWith, wxID_ANY, "", wxDefaultPosition,
                                    wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     endsWithField->SetBackgroundColour(wxColor(154,207,220));
@@ -351,7 +374,7 @@ void MyFrame::CreateGUI() {
 
     /** TEXT LABEL **/
     auto containsLabel = new wxStaticText(contains, wxID_ANY, "Contains:");
-    containsLabel->SetFont(startsWithFont);
+    containsLabel->SetFont(defaultFont);
     containsField = new wxTextCtrl(contains, wxID_ANY, "", wxDefaultPosition,
                                    wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     containsField->SetBackgroundColour(wxColor(154,207,220));
@@ -367,7 +390,7 @@ void MyFrame::CreateGUI() {
 
     /** TEXT LABEL **/
     auto lettersLabel = new wxStaticText(letters, wxID_ANY, "Letters:");
-    lettersLabel->SetFont(startsWithFont);
+    lettersLabel->SetFont(defaultFont);
     lettersField = new wxTextCtrl(letters, wxID_ANY, "", wxDefaultPosition,
                                   wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     lettersField->SetBackgroundColour(wxColor(154,207,220));
@@ -380,13 +403,24 @@ void MyFrame::CreateGUI() {
     anagram = new wxPanel(this, anagramID, wxDefaultPosition, wxDefaultSize);
     anagram->SetBackgroundColour (wxColor(154,207,220));
 
+    /** CHECK BOX **/
+    anagramCheckBox = new wxCheckBox(anagram, wxID_ANY, "Anagram", wxDefaultPosition,
+                                  wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
+    anagramCheckBox->SetBackgroundColour(wxColor(154,207,220));
+    anagramCheckBox->SetFont(wxFont(25, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTSTYLE_NORMAL));
+    auto anagramPanelSizer = new wxBoxSizer(wxVERTICAL);
+    anagramPanelSizer->Add(anagramCheckBox, 0, wxEXPAND | wxALL, FromDIP(20));
+    anagram->SetSizerAndFit(anagramPanelSizer);
+    anagram->Disable();
+    /** CHECK BOX **/
+
     //middle_left contains
     length = new wxPanel(this, lengthID, wxDefaultPosition, wxDefaultSize);
     length->SetBackgroundColour (wxColor(154,207,220));
 
     /** TEXT LABEL **/
     auto lengthLabel = new wxStaticText(length, wxID_ANY, "Length:");
-    lengthLabel->SetFont(startsWithFont);
+    lengthLabel->SetFont(defaultFont);
     lengthField = new wxTextCtrl(length, wxID_ANY, "", wxDefaultPosition,
                                  wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     lengthField->SetBackgroundColour(wxColor(154,207,220));
@@ -401,7 +435,7 @@ void MyFrame::CreateGUI() {
 
     /** TEXT LABEL **/
     auto syllablesLabel = new wxStaticText(syllables, wxID_ANY, "Syllables:");
-    syllablesLabel->SetFont(startsWithFont);
+    syllablesLabel->SetFont(defaultFont);
     syllablesField = new wxTextCtrl(syllables, wxID_ANY, "", wxDefaultPosition,
                                     wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     syllablesField->SetBackgroundColour(wxColor(154,207,220));
@@ -416,7 +450,7 @@ void MyFrame::CreateGUI() {
 
     /** TEXT LABEL **/
     auto rhymesWithLabel = new wxStaticText(rhymesWith, wxID_ANY, "Rhymes With:");
-    rhymesWithLabel->SetFont(startsWithFont);
+    rhymesWithLabel->SetFont(defaultFont);
     rhymesWithField = new wxTextCtrl(rhymesWith, wxID_ANY, "", wxDefaultPosition,
                                      wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     rhymesWithField->SetBackgroundColour(wxColor(154,207,220));
@@ -430,10 +464,11 @@ void MyFrame::CreateGUI() {
     wordType->SetBackgroundColour (wxColor(154,207,220));
 
     //middle_right contains
-    checkBoxes = new wxPanel(this, checkBoxesID, wxDefaultPosition, wxDefaultSize);
-    checkBoxes->SetBackgroundColour (wxColor(154,207,220));
+    checkBoxes = new wxBoxSizer (wxVERTICAL);
     middle_right_top_sizer = new wxBoxSizer (wxHORIZONTAL);
     middle_right_bottom_sizer = new wxBoxSizer (wxHORIZONTAL);
+
+
 
     //middle_right_top contains
     homophone = new wxPanel(this, homophoneID, wxDefaultPosition, wxDefaultSize);
@@ -441,7 +476,7 @@ void MyFrame::CreateGUI() {
 
     /** TEXT LABEL **/
     auto homophoneLabel = new wxStaticText(homophone, wxID_ANY, "Homophone:");
-    homophoneLabel->SetFont(startsWithFont);
+    homophoneLabel->SetFont(defaultFont);
     homophoneField = new wxTextCtrl(homophone, wxID_ANY, "", wxDefaultPosition,
                                     wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     homophoneField->SetBackgroundColour(wxColor(154,207,220));
@@ -456,7 +491,7 @@ void MyFrame::CreateGUI() {
 
     /** TEXT LABEL **/
     auto omitLettersLabel = new wxStaticText(omitLetters, wxID_ANY, "Omit Letters:");
-    omitLettersLabel->SetFont(startsWithFont);
+    omitLettersLabel->SetFont(defaultFont);
     omitLettersField = new wxTextCtrl(omitLetters, wxID_ANY, "", wxDefaultPosition,
                                       wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     omitLettersField->SetBackgroundColour(wxColor(154,207,220));
@@ -472,7 +507,7 @@ void MyFrame::CreateGUI() {
 
     /** TEXT LABEL **/
     auto synonymLabel = new wxStaticText(synonym, wxID_ANY, "Synonym:");
-    synonymLabel->SetFont(startsWithFont);
+    synonymLabel->SetFont(defaultFont);
     synonymField = new wxTextCtrl(synonym, wxID_ANY, "", wxDefaultPosition,
                                   wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     synonymField->SetBackgroundColour(wxColor(154,207,220));
@@ -487,7 +522,7 @@ void MyFrame::CreateGUI() {
 
     /** TEXT LABEL **/
     auto antonymLabel = new wxStaticText(antonym, wxID_ANY, "Antonym:");
-    antonymLabel->SetFont(startsWithFont);
+    antonymLabel->SetFont(defaultFont);
     antonymField = new wxTextCtrl(antonym, wxID_ANY, "", wxDefaultPosition,
                                   wxSize(FromDIP(20), wxDefaultSize.GetHeight()));
     antonymField->SetBackgroundColour(wxColor(154,207,220));
@@ -511,7 +546,31 @@ void MyFrame::CombineSizers(){
     middle_right_top_sizer->Add(homophone, 1, wxEXPAND);
     middle_right_top_sizer->Add(omitLetters, 1, wxEXPAND);
 
-    middle_right_sizer->Add(checkBoxes, 2, wxEXPAND);
+    auto checkBoxes2 = new wxPanel(this, checkBoxesID, wxDefaultPosition, wxDefaultSize);
+    checkBoxes2->SetBackgroundColour (wxColor(154,207,220));
+
+    //wxArrayString choices;
+    //choices.push_back("Palindrone");
+    //choices.push_back("Kangaroo Word\n(word containing a word)");
+    //choices.push_back("Compound Word");
+    //choices.push_back("Proper Noun");
+    wxString *const choices2 = nullptr;
+    //choices2->insert(0,"Palindrone");
+    wxCheckListBox* checkBoxes3 = new wxCheckListBox(this, checkBoxesID, wxDefaultPosition, wxDefaultSize);
+    checkBoxes3->Append("Please");
+    checkBoxes3->Append("Please");
+    checkBoxes3->Append("Please");
+    checkBoxes3->Append("Please");
+    checkBoxes3->SetBackgroundColour(wxColor(154,207,220));
+    checkBoxes3->SetFont(defaultFont);
+    checkBoxes3->SetForegroundColour(wxColor(154,207,220));
+
+    //checkBoxes->Add(palindrome, 1, wxEXPAND);
+    //checkBoxes->Add(kangarooWord, 1, wxEXPAND);
+    //checkBoxes->Add(compoundWord, 1, wxEXPAND);
+    //checkBoxes->Add(properNoun, 1, wxEXPAND);
+
+    middle_right_sizer->Add(checkBoxes3, 2, wxEXPAND);
     middle_right_sizer->Add(middle_right_top_sizer, 1, wxEXPAND);
     middle_right_sizer->Add(middle_right_bottom_sizer, 1, wxEXPAND);
 
