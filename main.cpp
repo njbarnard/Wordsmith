@@ -3,6 +3,7 @@
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
 #include <iostream>
+#include <thread>
 
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
@@ -46,7 +47,8 @@ private:
     *middle_fourth_sizer, *middle_fifth_sizer, *checkBoxesSizer, *generateWithBorder;
 
     wxPanel *banner, *metronome, *output, *generate, *startsWith, *endsWith, *contains, *letters, *anagram,
-    *length, *syllables, *rhymesWith, *wordType, *homophone, *omitLetters, *synonym, *antonym, *checkBoxesPanel;
+    *length, *syllables, *rhymesWith, *wordType, *homophone, *omitLetters, *synonym, *antonym, *checkBoxesPanel,
+    *border_top, *border_bottom, *border_left, *border_right;
 
     wxListBox *wordList;
 
@@ -403,8 +405,33 @@ void MyFrame::OnChoice(wxCommandEvent &e){
     e.Skip();
 }
 
-void MyFrame::OnButtonClicked(wxCommandEvent &e){
+void MyFrame::OnButtonClicked(wxCommandEvent &e) {
     wordList->AppendString(startsWithString);
+    border_top->SetBackgroundColour(wxColor(160, 203, 30));
+    border_bottom->SetBackgroundColour(wxColor(160, 203, 30));
+    border_left->SetBackgroundColour(wxColor(160, 203, 30));
+    border_right->SetBackgroundColour(wxColor(160, 203, 30));
+    Refresh();
+    Update();
+
+    const auto f = [this](){
+        wxMilliSleep(700);
+        wxGetApp().CallAfter([this]() {
+            /* wxWidgets cannot make UI changes in a background thread,
+               so wxGetApp().CallAfter() must be called for UI changes */
+            border_top->SetBackgroundColour(wxColor(198, 227, 114));
+            border_bottom->SetBackgroundColour(wxColor(198, 227, 114));
+            border_left->SetBackgroundColour(wxColor(198, 227, 114));
+            border_right->SetBackgroundColour(wxColor(198, 227, 114));
+            Refresh();
+            Update();
+        });
+    };
+
+    //threads learned via: https://www.youtube.com/watch?v=DANoG48yFww
+    std::thread bck{f};
+    bck.detach();
+
     e.Skip();
 }
 
@@ -473,13 +500,13 @@ void MyFrame::CreateGUI() {
     generatePanelSizer->Add(generateButton, 1, wxEXPAND, FromDIP(400));
     generate->SetSizerAndFit(generatePanelSizer);
 
-    auto border_top = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
+    border_top = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
     border_top->SetBackgroundColour (wxColor(198, 227, 114));
-    auto border_bottom = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
+    border_bottom = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
     border_bottom->SetBackgroundColour (wxColor(198, 227, 114));
-    auto border_left = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
+    border_left = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
     border_left->SetBackgroundColour (wxColor(198, 227, 114));
-    auto border_right = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
+    border_right = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
     border_right->SetBackgroundColour (wxColor(198, 227, 114));
 
     auto generateVertical = new wxBoxSizer(wxVERTICAL);
