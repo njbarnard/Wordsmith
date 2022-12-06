@@ -26,10 +26,11 @@ public:
     MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size);
     void OnTyping(wxCommandEvent &e);
     void OnOutputTyping(wxCommandEvent &e);
-    void OnButtonClicked(wxCommandEvent &e);
     void OnListBoxChecked(wxCommandEvent &e);
     void OnBoxChecked(wxCommandEvent &e);
     void OnSlide(wxCommandEvent &e);
+    void OnChoice(wxCommandEvent &e);
+    void OnButtonClicked(wxCommandEvent &e);
     void CreateGUI();
     void CombineSizers();
     void BindEvents();
@@ -42,7 +43,7 @@ public:
 private:
     wxSizer *main_sizer, *top_banner_sizer, *body_sizer, *left_column_sizer, *middle_column_sizer,
     *right_column_sizer, *middle_first_sizer, *middle_second_sizer, *middle_third_sizer, *middle_third_left_sizer,
-    *middle_fourth_sizer, *middle_fifth_sizer, *checkBoxesSizer;
+    *middle_fourth_sizer, *middle_fifth_sizer, *checkBoxesSizer, *generateWithBorder;
 
     wxPanel *banner, *metronome, *output, *generate, *startsWith, *endsWith, *contains, *letters, *anagram,
     *length, *syllables, *rhymesWith, *wordType, *homophone, *omitLetters, *synonym, *antonym, *checkBoxesPanel;
@@ -103,7 +104,6 @@ void MyFrame::BindEvents(){
     endsWith->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
     contains->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
     letters->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
-
     rhymesWith->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
     homophone->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
     omitLetters->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
@@ -113,6 +113,7 @@ void MyFrame::BindEvents(){
     checkBoxes->Bind(wxEVT_CHECKLISTBOX, &MyFrame::OnListBoxChecked, this);
     length->Bind(wxEVT_SLIDER, &MyFrame::OnSlide, this);
     syllables->Bind(wxEVT_SLIDER, &MyFrame::OnSlide, this);
+    wordType->Bind(wxEVT_CHOICE, &MyFrame::OnChoice, this);
 }
 
 void MyFrame::SetValues(int ID, const std::string& text){
@@ -262,7 +263,7 @@ void MyFrame::OnOutputTyping(wxCommandEvent &e){
 }
 
 void MyFrame::OnBoxChecked(wxCommandEvent &e){
-    wxCheckBox* checkBox = wxDynamicCast(e.GetEventObject(), wxCheckBox);
+    wxCheckBox *checkBox = wxDynamicCast(e.GetEventObject(), wxCheckBox);
     wxPanel *panel = wxDynamicCast(checkBox->GetParent(), wxPanel);
 
     if (e.IsChecked()) {
@@ -329,7 +330,7 @@ void MyFrame::OnListBoxChecked(wxCommandEvent &e){
 }
 
 void MyFrame::OnSlide(wxCommandEvent &e){
-    wxSlider* slider = wxDynamicCast(e.GetEventObject(), wxSlider);
+    wxSlider *slider = wxDynamicCast(e.GetEventObject(), wxSlider);
     wxPanel *panel = wxDynamicCast(slider->GetParent(), wxPanel);
 
     if (panel->GetId() == lengthID){
@@ -355,6 +356,48 @@ void MyFrame::OnSlide(wxCommandEvent &e){
         }
 
     } else std::cout << "Error in OnSlide !" << std::endl;
+
+    Refresh();
+    e.Skip();
+}
+
+void MyFrame::OnChoice(wxCommandEvent &e){
+    wxChoice *choice = wxDynamicCast(e.GetEventObject(), wxChoice);
+    wxPanel *panel = wxDynamicCast(choice->GetParent(), wxPanel);
+
+    if (choice->GetSelection() == 0){
+        panel->SetBackgroundColour(wxColor(154, 207, 220));
+        wordTypeIsUsed = false;
+    } else {
+        panel->SetBackgroundColour(wxColor(58, 175, 220));
+        wordTypeIsUsed = true;
+        switch (choice->GetSelection()) {
+            case 1:
+                wordTypeString = "Noun";
+                break;
+            case 2:
+                wordTypeString = "Verb";
+                break;
+            case 3:
+                wordTypeString = "Adjective";
+                break;
+            case 4:
+                wordTypeString = "Adverb";
+                break;
+            case 5:
+                wordTypeString = "Pronoun";
+                break;
+            case 6:
+                wordTypeString = "Preposition";
+                break;
+            case 7:
+                wordTypeString = "Conjunction";
+                break;
+            default:
+                std::cout << "Error in onChoice !" << std::endl;
+                break;
+        }
+    }
 
     Refresh();
     e.Skip();
@@ -424,12 +467,30 @@ void MyFrame::CreateGUI() {
     generate->SetBackgroundColour (wxColor(198, 227, 114));
 
     //--GENERATE BUTTON--//
-    generateButton = new wxButton(generate, wxID_ANY, "GENERATE", wxDefaultPosition, wxDefaultSize);
-    generateButton->SetBackgroundColour(wxColor(198,227,114));
-    generateButton->SetForegroundColour(wxColor(198,227,114));
+    generateButton = new wxButton(generate, wxID_ANY, "GENERATE", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
     auto generatePanelSizer = new wxBoxSizer(wxVERTICAL);
-    generatePanelSizer->Add(generateButton, 1, wxALIGN_CENTER_HORIZONTAL);
+    generateButton->SetBackgroundColour(wxColor(0,172,2));
+    generatePanelSizer->Add(generateButton, 1, wxEXPAND, FromDIP(400));
     generate->SetSizerAndFit(generatePanelSizer);
+
+    auto border_top = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
+    border_top->SetBackgroundColour (wxColor(198, 227, 114));
+    auto border_bottom = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
+    border_bottom->SetBackgroundColour (wxColor(198, 227, 114));
+    auto border_left = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
+    border_left->SetBackgroundColour (wxColor(198, 227, 114));
+    auto border_right = new wxPanel(this, generateID, wxDefaultPosition, wxDefaultSize);
+    border_right->SetBackgroundColour (wxColor(198, 227, 114));
+
+    auto generateVertical = new wxBoxSizer(wxVERTICAL);
+    generateVertical->Add(border_top, 1, wxEXPAND);
+    generateVertical->Add(generate, 3, wxEXPAND);
+    generateVertical->Add(border_bottom, 1, wxEXPAND);
+
+    generateWithBorder = new wxBoxSizer(wxHORIZONTAL);
+    generateWithBorder->Add(border_left, 1, wxEXPAND);
+    generateWithBorder->Add(generateVertical, 3, wxEXPAND);
+    generateWithBorder->Add(border_right, 1, wxEXPAND);
     //--GENERATE BUTTON--//
 
     /** MIDDLE_COLUMN CONTAINS **/
@@ -710,7 +771,7 @@ void MyFrame::CombineSizers(){
     /** LEFT **/
     left_column_sizer->Add(metronome, 28, wxEXPAND);
     left_column_sizer->Add(output, 12, wxEXPAND);
-    left_column_sizer->Add(generate, 12, wxEXPAND);
+    left_column_sizer->Add(generateWithBorder, 12, wxEXPAND);
 
     /** RIGHT **/
     right_column_sizer->Add(wordList, 1, wxEXPAND);

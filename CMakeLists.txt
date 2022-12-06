@@ -34,7 +34,7 @@ if (WIN32)
     set (SRCS ${SRCS} wxWidgetTest.rc main.cpp)
 endif (WIN32)
 
-add_executable(${PROJECT_NAME} WIN32 ${SRCS} mainWindow.cpp mainWindow.h)
+add_executable(${PROJECT_NAME} WIN32 ${SRCS})
 target_link_libraries (${PROJECT_NAME} ${wxWidgets_LIBRARIES})
 
 
