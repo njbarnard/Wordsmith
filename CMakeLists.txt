@@ -31,7 +31,7 @@ set (SRCS main.cpp)
 # containing the manifest, icon and other resources
 
 if (WIN32)
-    set (SRCS ${SRCS} wxWidgetTest.rc main.cpp)
+    set (SRCS ${SRCS} wxWidgetTest.rc main.cpp Wordcrafter.h Wordcrafter.cpp)
 endif (WIN32)
 
 add_executable(${PROJECT_NAME} WIN32 ${SRCS})

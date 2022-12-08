@@ -2,12 +2,11 @@
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
-#include <iostream>
-#include <thread>
-
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
-#include <wx/slider.h>
+#include "Wordcrafter.h"
+#include <iostream>
+#include <thread>
 #endif
 
 wxFont defaultFont(30, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTSTYLE_NORMAL);
@@ -42,6 +41,8 @@ public:
     void checkBoxesPanelChecker();
 
 private:
+    //Wordcrafter wordcrafter;
+
     wxSizer *main_sizer, *top_banner_sizer, *body_sizer, *left_column_sizer, *middle_column_sizer,
     *right_column_sizer, *middle_first_sizer, *middle_second_sizer, *middle_third_sizer, *middle_third_left_sizer,
     *middle_fourth_sizer, *middle_fifth_sizer, *checkBoxesSizer, *generateWithBorder;
@@ -62,18 +63,18 @@ private:
 
     wxChoice *wordTypeChoice;
 
-    int checkCount, lengthVal, syllablesVal;
-
     wxTextCtrl *startsWithField, *endsWithField, *containsField, *lettersField, *syllablesField,
     *rhymesWithField, *homophoneField, *omitLettersField, *synonymField, *antonymField, *outputField;
 
-    std::string outputString, startsWithString, endsWithString, containsString, lettersString, anagramString,
+    std::string outputString, startsWithString, endsWithString, containsString, lettersString,
     rhymesWithString, wordTypeString, homophoneString, omitLettersString, synonymString, antonymString;
 
     bool outputIsUsed, startsWithIsUsed, endsWithIsUsed, containsIsUsed, lettersIsUsed, anagramIsUsed, lengthIsUsed,
     syllablesIsUsed, rhymesWithIsUsed, wordTypeIsUsed, palindromeIsUsed, kangarooWordIsUsed, compoundWordIsUsed,
     properNounIsUsed, longListIsUsed, perfectRhymeIsUsed, homophoneIsUsed, omitLettersIsUsed, synonymIsUsed,
     antonymIsUsed;
+
+    int checkCount, lengthVal, syllablesVal;
 
 };
 
@@ -221,7 +222,7 @@ void MyFrame::SetAnagram(){
 }
 
 void MyFrame::checkBoxesPanelChecker(){
-    if (syllablesIsUsed && homophoneIsUsed && omitLettersIsUsed && (checkCount > 0)){
+    if (syllablesIsUsed && homophoneIsUsed && omitLettersIsUsed){
         checkBoxesPanel->SetBackgroundColour(wxColor(58, 175, 220));
     }
 }
@@ -321,10 +322,8 @@ void MyFrame::OnListBoxChecked(wxCommandEvent &e){
 
     if (checkCount > 0) {
         checkBoxes->SetBackgroundColour(wxColor(58, 175, 220));
-        checkBoxesPanelChecker();
     } else {
         checkBoxes->SetBackgroundColour(wxColor(154, 207, 220));
-        checkBoxesPanel->SetBackgroundColour(wxColor(154, 207, 220));
     }
 
     Refresh();
@@ -495,8 +494,10 @@ void MyFrame::CreateGUI() {
 
     //--GENERATE BUTTON--//
     generateButton = new wxButton(generate, wxID_ANY, "GENERATE", wxDefaultPosition, wxDefaultSize, wxBORDER_NONE);
-    auto generatePanelSizer = new wxBoxSizer(wxVERTICAL);
     generateButton->SetBackgroundColour(wxColor(0,172,2));
+    generateButton->SetFont(wxFont(15, wxFONTFAMILY_DEFAULT,
+                                   wxFONTSTYLE_NORMAL, wxFONTSTYLE_NORMAL));
+    auto generatePanelSizer = new wxBoxSizer(wxVERTICAL);
     generatePanelSizer->Add(generateButton, 1, wxEXPAND, FromDIP(400));
     generate->SetSizerAndFit(generatePanelSizer);
 
