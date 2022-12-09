@@ -34,14 +34,13 @@ public:
     void CreateGUI();
     void CombineSizers();
     void BindEvents();
-    void InitializeBools();
     void SetValues(int ID, const std::string& text);
     void SetValues(int ID, bool val);
     void SetAnagram();
     void checkBoxesPanelChecker();
 
 private:
-    //Wordcrafter wordcrafter;
+    Wordcrafter wordcrafter;
 
     wxSizer *main_sizer, *top_banner_sizer, *body_sizer, *left_column_sizer, *middle_column_sizer,
     *right_column_sizer, *middle_first_sizer, *middle_second_sizer, *middle_third_sizer, *middle_third_left_sizer,
@@ -66,15 +65,7 @@ private:
     wxTextCtrl *startsWithField, *endsWithField, *containsField, *lettersField, *syllablesField,
     *rhymesWithField, *homophoneField, *omitLettersField, *synonymField, *antonymField, *outputField;
 
-    std::string outputString, startsWithString, endsWithString, containsString, lettersString,
-    rhymesWithString, wordTypeString, homophoneString, omitLettersString, synonymString, antonymString;
-
-    bool outputIsUsed, startsWithIsUsed, endsWithIsUsed, containsIsUsed, lettersIsUsed, anagramIsUsed, lengthIsUsed,
-    syllablesIsUsed, rhymesWithIsUsed, wordTypeIsUsed, palindromeIsUsed, kangarooWordIsUsed, compoundWordIsUsed,
-    properNounIsUsed, longListIsUsed, perfectRhymeIsUsed, homophoneIsUsed, omitLettersIsUsed, synonymIsUsed,
-    antonymIsUsed;
-
-    int checkCount, lengthVal, syllablesVal;
+    int checkCount;
 
 };
 
@@ -96,7 +87,6 @@ MyFrame::MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size)
     CreateGUI();
     CombineSizers();
     BindEvents();
-    InitializeBools();
 
 }
 
@@ -123,77 +113,54 @@ void MyFrame::SetValues(int ID, const std::string& text){
 
     switch(ID){
         case outputID:
-            if (text.length() > 0) {
-                outputString = text;
-                outputIsUsed = true;
-            } else outputIsUsed = false;
+            if (text.length() > 0) wordcrafter.setOutput(text, true);
+            else wordcrafter.setOutput("", false);
             break;
         case startsWithID:
-            if (text.length() > 0) {
-                startsWithString = text;
-                startsWithIsUsed = true;
-            } else startsWithIsUsed = false;
+            if (text.length() > 0) wordcrafter.setStartsWith(text, true);
+            else wordcrafter.setStartsWith("", false);
             break;
         case endsWithID:
-            if (text.length() > 0) {
-                endsWithString = text;
-                endsWithIsUsed = true;
-            } else endsWithIsUsed = false;
+            if (text.length() > 0) wordcrafter.setEndsWith(text, true);
+            else wordcrafter.setEndsWith("", false);
             break;
         case containsID:
-            if (text.length() > 0) {
-                containsString = text;
-                containsIsUsed = true;
-            } else containsIsUsed = false;
+            if (text.length() > 0) wordcrafter.setContains(text, true);
+            else wordcrafter.setContains("", false);
             break;
         case lettersID:
             if (text.length() > 0) {
-                lettersString = text;
-                lettersIsUsed = true;
+                wordcrafter.setLetters(text, true);
                 if (!anagram->IsEnabled()) anagram->Enable();
-            } else {lettersIsUsed = false; SetAnagram(); anagram->Disable();}
-            break;
-        case lengthID:
-            break;
-        case syllablesID:
+            } else {wordcrafter.setLetters("", false); SetAnagram(); anagram->Disable();}
             break;
         case rhymesWithID:
-            if (text.length() > 0) {
-                rhymesWithString = text;
-                rhymesWithIsUsed = true;
-            } else rhymesWithIsUsed = false;
+            if (text.length() > 0) wordcrafter.setRhymesWith(text, true);
+            else wordcrafter.setRhymesWith("", false);
             break;
         case wordTypeID:
-            if (text.length() > 0) {
-                wordTypeString = text;
-                wordTypeIsUsed = true;
-            } else wordTypeIsUsed = false;
+            if (text.length() > 0) wordcrafter.setWordType(text, true);
+            else wordcrafter.setWordType("", false);
             break;
         case homophoneID:
             if (text.length() > 0) {
-                homophoneString = text;
-                homophoneIsUsed = true;
+                wordcrafter.setHomophone(text, true);
                 checkBoxesPanelChecker();
-            } else {homophoneIsUsed = false; checkBoxesPanel->SetBackgroundColour(wxColor(154, 207, 220));}
+            } else {wordcrafter.setHomophone("", false); checkBoxesPanel->SetBackgroundColour(wxColor(154, 207, 220));}
             break;
         case omitLettersID:
             if (text.length() > 0) {
-                omitLettersString = text;
-                omitLettersIsUsed = true;
+                wordcrafter.setOmitLetters(text, true);
                 checkBoxesPanelChecker();
-            } else {omitLettersIsUsed = false; checkBoxesPanel->SetBackgroundColour(wxColor(154, 207, 220));}
+            } else {wordcrafter.setOmitLetters("", false); checkBoxesPanel->SetBackgroundColour(wxColor(154, 207, 220));}
             break;
         case synonymID:
-            if (text.length() > 0) {
-                synonymString = text;
-                synonymIsUsed = true;
-            } else synonymIsUsed = false;
+            if (text.length() > 0) wordcrafter.setSynonym(text, true);
+            else wordcrafter.setSynonym("", false);
             break;
         case antonymID:
-            if (text.length() > 0) {
-                antonymString = text;
-                antonymIsUsed = true;
-            } else antonymIsUsed = false;
+            if (text.length() > 0) wordcrafter.setAntonym(text, true);
+            else wordcrafter.setAntonym("", false);
             break;
         default:
             std::cout << "Error in SetValues() !" << std::endl;
@@ -205,8 +172,8 @@ void MyFrame::SetValues(int ID, bool val){
 
     switch(ID){
         case anagramID:
-            if (val) anagramIsUsed = true;
-            else anagramIsUsed = false;
+            if (val) wordcrafter.setAnagram(true);
+            else wordcrafter.setAnagram(false);
             break;
         default:
             std::cout << "Error in SetValues() !" << std::endl;
@@ -218,11 +185,11 @@ void MyFrame::SetAnagram(){
     anagram->SetBackgroundColour(wxColor(154, 207, 220));
     anagramCheckBox->SetBackgroundColour(wxColor(154, 207, 220));
     anagramCheckBox->SetValue(false);
-    anagramIsUsed = false;
+    wordcrafter.setAnagram(false);
 }
 
 void MyFrame::checkBoxesPanelChecker(){
-    if (syllablesIsUsed && homophoneIsUsed && omitLettersIsUsed){
+    if (wordcrafter.getSyllablesBool() && wordcrafter.getHomophoneBool() && wordcrafter.getOmitLettersBool()){
         checkBoxesPanel->SetBackgroundColour(wxColor(58, 175, 220));
     }
 }
@@ -289,31 +256,31 @@ void MyFrame::OnListBoxChecked(wxCommandEvent &e){
 
     switch(e.GetSelection()){
         case 0:
-            palindromeIsUsed = !palindromeIsUsed;
-            isChecked = palindromeIsUsed;
+            wordcrafter.setPalindrome(!wordcrafter.getPalindromeBool());
+            isChecked = wordcrafter.getPalindromeBool();
             break;
         case 1:
-            kangarooWordIsUsed = !kangarooWordIsUsed;
-            isChecked = kangarooWordIsUsed;
+            wordcrafter.setKangarooWord(!wordcrafter.getKangarooWordBool());
+            isChecked = wordcrafter.getKangarooWordBool();
             break;
         case 2:
-            compoundWordIsUsed = !compoundWordIsUsed;
-            isChecked = compoundWordIsUsed;
+            wordcrafter.setCompoundWord(!wordcrafter.getCompoundWordBool());
+            isChecked = wordcrafter.getCompoundWordBool();
             break;
         case 3:
-            properNounIsUsed = !properNounIsUsed;
-            isChecked = properNounIsUsed;
+            wordcrafter.setProperNoun(!wordcrafter.getProperNounBool());
+            isChecked = wordcrafter.getProperNounBool();
             break;
         case 4:
-            longListIsUsed = !longListIsUsed;
-            isChecked = longListIsUsed;
+            wordcrafter.setLongList(!wordcrafter.getLongListBool());
+            isChecked = wordcrafter.getLongListBool();
             break;
         case 5:
-            perfectRhymeIsUsed = !perfectRhymeIsUsed;
-            isChecked = perfectRhymeIsUsed;
+            wordcrafter.setPerfectRhyme(!wordcrafter.getPerfectRhymeBool());
+            isChecked = wordcrafter.getPerfectRhymeBool();
             break;
         default:
-            std::cout << "Error in OnListBoxChecked !" << std::endl;
+            std::cout << "Error in OnListBoxChecked() !" << std::endl;
             break;
     }
 
@@ -336,22 +303,22 @@ void MyFrame::OnSlide(wxCommandEvent &e){
 
     if (panel->GetId() == lengthID){
 
-        lengthVal = lengthSlider->GetValue();
+        int lengthVal = lengthSlider->GetValue();
         if (lengthVal > 0){
-            lengthIsUsed = true; length->SetBackgroundColour(wxColor(58, 175, 220));
+            wordcrafter.setLength(lengthVal, true); length->SetBackgroundColour(wxColor(58, 175, 220));
         }
-        else {lengthIsUsed = false; length->SetBackgroundColour(wxColor(154, 207, 220));}
+        else {wordcrafter.setLength(lengthVal, false); length->SetBackgroundColour(wxColor(154, 207, 220));}
 
     } else if (panel->GetId() == syllablesID){
 
-        syllablesVal = syllablesSlider->GetValue();
+        int syllablesVal = syllablesSlider->GetValue();
         if (syllablesVal > 0){
-            syllablesIsUsed = true;
+            wordcrafter.setSyllables(syllablesVal, true);
             syllables->SetBackgroundColour(wxColor(58, 175, 220));
             checkBoxesPanelChecker();
         }
         else {
-            syllablesIsUsed = false;
+            wordcrafter.setSyllables(syllablesVal, false);
             syllables->SetBackgroundColour(wxColor(154, 207, 220));
             checkBoxesPanel->SetBackgroundColour(wxColor(154, 207, 220));
         }
@@ -368,34 +335,33 @@ void MyFrame::OnChoice(wxCommandEvent &e){
 
     if (choice->GetSelection() == 0){
         panel->SetBackgroundColour(wxColor(154, 207, 220));
-        wordTypeIsUsed = false;
+        wordcrafter.setWordType("", false);
     } else {
         panel->SetBackgroundColour(wxColor(58, 175, 220));
-        wordTypeIsUsed = true;
         switch (choice->GetSelection()) {
             case 1:
-                wordTypeString = "Noun";
+                wordcrafter.setWordType("Noun", true);
                 break;
             case 2:
-                wordTypeString = "Verb";
+                wordcrafter.setWordType("Verb", true);
                 break;
             case 3:
-                wordTypeString = "Adjective";
+                wordcrafter.setWordType("Adjective", true);
                 break;
             case 4:
-                wordTypeString = "Adverb";
+                wordcrafter.setWordType("Adverb", true);
                 break;
             case 5:
-                wordTypeString = "Pronoun";
+                wordcrafter.setWordType("Adverb", true);
                 break;
             case 6:
-                wordTypeString = "Preposition";
+                wordcrafter.setWordType("Preposition", true);
                 break;
             case 7:
-                wordTypeString = "Conjunction";
+                wordcrafter.setWordType("Conjunction", true);
                 break;
             default:
-                std::cout << "Error in onChoice !" << std::endl;
+                std::cout << "Error in onChoice() !" << std::endl;
                 break;
         }
     }
@@ -405,7 +371,9 @@ void MyFrame::OnChoice(wxCommandEvent &e){
 }
 
 void MyFrame::OnButtonClicked(wxCommandEvent &e) {
-    wordList->AppendString(startsWithString);
+
+    wordcrafter.outputAllVariables();
+
     border_top->SetBackgroundColour(wxColor(160, 203, 30));
     border_bottom->SetBackgroundColour(wxColor(160, 203, 30));
     border_left->SetBackgroundColour(wxColor(160, 203, 30));
@@ -817,14 +785,4 @@ void MyFrame::CombineSizers(){
     main_sizer->Add(body_sizer, 540, wxEXPAND);
 
     this->SetSizerAndFit (main_sizer);
-}
-
-void MyFrame::InitializeBools(){
-    //SET ALL BOOLS TO FALSE
-    outputIsUsed = startsWithIsUsed = endsWithIsUsed = containsIsUsed = lettersIsUsed = anagramIsUsed = lengthIsUsed =
-    syllablesIsUsed = rhymesWithIsUsed = wordTypeIsUsed = palindromeIsUsed = kangarooWordIsUsed = compoundWordIsUsed =
-    properNounIsUsed = homophoneIsUsed = omitLettersIsUsed = synonymIsUsed = antonymIsUsed = false;
-
-    //CHANGE CHECKCOUNT TO 0
-    checkCount = 0;
 }
