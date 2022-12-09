@@ -5,20 +5,19 @@
 #ifndef WORDSMITH_WORDCRAFTER_H
 #define WORDSMITH_WORDCRAFTER_H
 
+#include <vector>
+
 
 class Wordcrafter {
 
 public:
+    //constructor
     Wordcrafter() {
         InitializeBools();
     }
 
-    std::string BoolToString(bool b){
-        if (b) return "True";
-        else return "False";
-    };
-
-    void outputAllVariables();
+    //algorithm functions
+    std::vector<std::string> craftWords();
 
     //setters
     void setOutput (const std::string &str, bool b);
@@ -43,15 +42,22 @@ public:
     void setAntonym(const std::string &str, bool b);
 
     //getters
-    bool getSyllablesBool(){return syllablesIsUsed;}
-    bool getHomophoneBool(){return homophoneIsUsed;}
-    bool getOmitLettersBool(){return omitLettersIsUsed;}
-    bool getPalindromeBool(){return palindromeIsUsed;}
-    bool getKangarooWordBool(){return kangarooWordIsUsed;}
-    bool getCompoundWordBool(){return compoundWordIsUsed;}
-    bool getProperNounBool(){return properNounIsUsed;}
-    bool getLongListBool(){return longListIsUsed;}
-    bool getPerfectRhymeBool(){return perfectRhymeIsUsed;}
+    bool getSyllablesBool() const{return syllablesIsUsed;}
+    bool getHomophoneBool() const{return homophoneIsUsed;}
+    bool getOmitLettersBool() const{return omitLettersIsUsed;}
+    bool getPalindromeBool() const{return palindromeIsUsed;}
+    bool getKangarooWordBool() const{return kangarooWordIsUsed;}
+    bool getCompoundWordBool() const{return compoundWordIsUsed;}
+    bool getProperNounBool() const{return properNounIsUsed;}
+    bool getLongListBool() const{return longListIsUsed;}
+    bool getPerfectRhymeBool() const{return perfectRhymeIsUsed;}
+
+    //terminal output
+    void outputAllVariables();
+    static std::string BoolToString(bool b){
+        if (b) return "True";
+        else return "False";
+    };
 
 private:
 
@@ -80,6 +86,11 @@ void Wordcrafter::InitializeBools(){
     length = syllables = 0;
 }
 
+std::vector<std::string> craftWords(){
+    std::vector<std::string> craftedWords;
+    return craftedWords;
+}
+
 void Wordcrafter::outputAllVariables() {
 
     std::cout << "----------------------------------------------------------------------" << std::endl;
@@ -91,15 +102,16 @@ void Wordcrafter::outputAllVariables() {
     std::cout << "Anagram" << " [" << BoolToString(anagramIsUsed) << "]" << std::endl;
     std::cout << "Length: " << length << " [" << BoolToString(lengthIsUsed) << "]" << std::endl;
     std::cout << "Syllables: " << syllables << " [" << BoolToString(syllablesIsUsed) << "]" << std::endl;
-    std::cout << "Rhymes with: " << rhymesWith << " [" << BoolToString(rhymesWithIsUsed) << "]" << std::endl;
-    std::cout << "Word Type: " << wordType << " [" << BoolToString(wordTypeIsUsed) << "]" << std::endl;
     std::cout << "Palindrome" << " [" << BoolToString(palindromeIsUsed) << "]" << std::endl;
     std::cout << "Kangaroo Word" << " [" << BoolToString(kangarooWordIsUsed) << "]" << std::endl;
     std::cout << "Compound Word" << " [" << BoolToString(compoundWordIsUsed) << "]" << std::endl;
     std::cout << "Proper Noun" << " [" << BoolToString(properNounIsUsed) << "]" << std::endl;
     std::cout << "Long List" << " [" << BoolToString(longListIsUsed) << "]" << std::endl;
     std::cout << "Perfect Rhyme" << " [" << BoolToString(perfectRhymeIsUsed) << "]" << std::endl;
+    std::cout << "Rhymes with: " << rhymesWith << " [" << BoolToString(rhymesWithIsUsed) << "]" << std::endl;
+    std::cout << "Homophone: " << homophone << " [" << BoolToString(homophoneIsUsed) << "]" << std::endl;
     std::cout << "Omit Letters: " << omitLetters << " [" << BoolToString(omitLettersIsUsed) << "]" << std::endl;
+    std::cout << "Word Type: " << wordType << " [" << BoolToString(wordTypeIsUsed) << "]" << std::endl;
     std::cout << "Synonym: " << synonym << " [" << BoolToString(synonymIsUsed) << "]" << std::endl;
     std::cout << "Antonym: " << antonym << " [" << BoolToString(antonymIsUsed) << "]" << std::endl;
     std::cout << "----------------------------------------------------------------------" << std::endl;
