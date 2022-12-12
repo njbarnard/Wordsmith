@@ -1,4 +1,4 @@
-// wxWidgets "Hello World" Program
+// wxWidgets Program
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -373,6 +373,7 @@ void MyFrame::OnChoice(wxCommandEvent &e){
 void MyFrame::OnButtonClicked(wxCommandEvent &e) {
 
     wordcrafter.outputAllVariables();
+    wordcrafter.craftWords();
 
     border_top->SetBackgroundColour(wxColor(160, 203, 30));
     border_bottom->SetBackgroundColour(wxColor(160, 203, 30));

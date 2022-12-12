@@ -6,6 +6,9 @@
 #define WORDSMITH_WORDCRAFTER_H
 
 #include <vector>
+#include <unordered_set>
+#include "ryhmer.h"
+#include <iostream>
 
 
 class Wordcrafter {
@@ -14,10 +17,14 @@ public:
     //constructor
     Wordcrafter() {
         InitializeBools();
+        shortWordListPath = "../english194k.txt";
+        longWordListPath = "../english479k.txt";
+        properNounListPath = "../english479k.txt";
     }
 
     //algorithm functions
     std::vector<std::string> craftWords();
+    static std::string Lowercase(std::string word);
 
     //setters
     void setOutput (const std::string &str, bool b);
@@ -63,6 +70,21 @@ private:
 
     void InitializeBools();
 
+    //algorithm-specific variables
+    int previousLongListIsUsed, previousProperNounIsUsed;
+    std::vector<std::string> wordList{};
+    std::unordered_set<std::string> wordSet{};
+
+    //algorithm functions
+    void parseWordList(std::string& filePath);
+    void startsWithFilter(std::vector<std::string>& words);
+    void endsWithFilter(std::vector<std::string>& words);
+    void containsFilter(std::vector<std::string>& words);
+    void rhymesWithFilter(std::vector<std::string>& words);
+    void lengthFilter(std::vector<std::string>& words);
+    void lettersFilter(std::vector<std::string>& words);
+
+
     std::string output, startsWith, endsWith, contains, letters, rhymesWith,
              wordType, homophone, omitLetters, synonym, antonym;
 
@@ -72,6 +94,8 @@ private:
             antonymIsUsed;
 
     int length, syllables;
+
+    std::string shortWordListPath, longWordListPath, properNounListPath;
 
 };
 
@@ -84,12 +108,199 @@ void Wordcrafter::InitializeBools(){
     omitLettersIsUsed = synonymIsUsed = antonymIsUsed = false;
 
     length = syllables = 0;
+
+    previousLongListIsUsed = previousProperNounIsUsed = -1;
 }
 
-std::vector<std::string> craftWords(){
+std::vector<std::string> Wordcrafter::craftWords(){
     std::vector<std::string> craftedWords;
+
+    //this block of code avoids parsing the word list every time if the choice hasn't changed
+    if (properNounIsUsed){
+        if (properNounIsUsed != previousProperNounIsUsed) parseWordList(properNounListPath);
+    }
+    else if (previousLongListIsUsed != longListIsUsed) {
+        if (longListIsUsed) parseWordList(longWordListPath);
+        else parseWordList(shortWordListPath);
+    }
+    craftedWords = wordList;
+    previousProperNounIsUsed = properNounIsUsed;
+    previousLongListIsUsed = longListIsUsed;
+
+    //parameter functions
+    if(startsWithIsUsed) startsWithFilter(craftedWords);
+    if(endsWithIsUsed) endsWithFilter(craftedWords);
+    if(containsIsUsed) containsFilter(craftedWords);
+    if(rhymesWithIsUsed) rhymesWithFilter(craftedWords);
+    if (lengthIsUsed) lengthFilter(craftedWords);
+    if (lettersIsUsed) lettersFilter(craftedWords);
+
+
+    std::cout << "----------------------------------" << std::endl;
+    for (auto word : craftedWords)
+        std::cout << word << std::endl;
+    std::cout << "----------------------------------" << std::endl;
+    std::cout << craftedWords.size() << " words found!";
+
+
     return craftedWords;
 }
+
+void Wordcrafter::parseWordList(std::string& filePath){
+    std::string word;
+    std::ifstream file(filePath);
+    wordList.clear();
+    wordSet.clear();
+
+    if (!file) {
+        //checks to make sure the file can be opened
+        std::cout << "File cannot be opened" << std::endl << std::endl;
+        return;
+    }
+
+    while (!file.eof()) {
+        getline(file, word); //gets word
+        wordList.push_back(word);
+        wordSet.insert(word);
+    }
+}
+
+void Wordcrafter::startsWithFilter(std::vector<std::string> &words){
+    std::vector<std::string> results;
+
+    for (auto word : words){
+        if (startsWith.length() <= word.length()){
+            bool checker = true;
+            for (int i = 0; i < startsWith.length(); i++){
+                if (word.at(i) != startsWith.at(i) && startsWith.at(i) != '_'){
+                    checker = false;
+                }
+            }
+            if (checker) results.push_back(word);
+        }
+    }
+    words = results;
+}
+
+void Wordcrafter::endsWithFilter(std::vector<std::string> &words){
+    std::vector<std::string> results;
+
+    for (auto word : words){
+        if (endsWith.length() <= word.length()){
+            bool checker = true;
+            for (int i = 0; i < endsWith.length(); i++){
+                if (word.at(word.length() -1 -i) != endsWith.at(endsWith.length() -1 -i)
+                        && endsWith.at(endsWith.length() -1 -i) != '_'){
+                    checker = false;
+                }
+            }
+            if (checker) results.push_back(word);
+        }
+    }
+    words = results;
+}
+
+void Wordcrafter::containsFilter(std::vector<std::string> &words) {
+    std::vector<std::string> results;
+
+    for (auto word : words){
+        auto n = word.find(contains);
+        if (n != std::string::npos)
+        {
+            results.push_back(word);
+        }
+    }
+    words = results;
+}
+
+void Wordcrafter::rhymesWithFilter(std::vector<std::string> &words) {
+    std::vector<std::string> results;
+
+    std::stringstream ss(rhymesWith);
+    std::string singleRhyme;
+    std::vector<std::string> rhymeWords;
+
+    while (getline(ss, singleRhyme, ' ')){
+        rhymeWords.push_back(singleRhyme);
+    }
+
+    rhymer r(std::ifstream("../cmudict-0.7b"), std::ifstream("../cmudict-0.7b.phones"));
+
+    std::vector<std::string> rhymes;
+    std::vector<std::string> rhymesTemp;
+
+    for (auto word : rhymeWords) {
+        if (perfectRhymeIsUsed) rhymesTemp = r.rhymes(word, true);
+        else rhymesTemp = r.rhymes(word, false);
+
+        rhymes.insert(rhymes.end(), rhymesTemp.begin(), rhymesTemp.end());
+    }
+
+    sort(rhymes.begin(), rhymes.end());
+    rhymes.erase(unique( rhymes.begin(), rhymes.end()), rhymes.end());
+
+    for (auto & rhyme : rhymes){
+        rhyme = Lowercase(rhyme);
+    }
+
+    sort(words.begin(), words.end());
+    sort(rhymes.begin(), rhymes.end());
+
+    set_intersection(words.begin(), words.end(), rhymes.begin(),
+                     rhymes.end(), back_inserter(results));
+    words = results;
+}
+
+void Wordcrafter::lengthFilter(std::vector<std::string>& words){
+    std::vector<std::string> results;
+    for (auto word : words){
+            if (word.length() == length) results.push_back(word);
+    }
+    words = results;
+}
+
+void Wordcrafter::lettersFilter(std::vector<std::string>& words){
+    std::vector<std::string> results;
+
+    std::vector<int> alphabet(26, 0);
+    std::string allLetters = Lowercase(letters);
+    for (char x : allLetters){
+        if (isalpha(x)) alphabet.at(x - 97)++;
+    }
+
+    for (auto word : words){
+        std::vector<int> alphabetValues = alphabet;
+        bool checker = true;
+        for (char x : word){
+            if (isalpha(x)) {if (alphabetValues.at(x - 97)-- < 1) checker = false;}
+        }
+        if (!anagramIsUsed){
+            if (checker) results.push_back(word);
+        } else {
+            if (checker){
+                bool anagramChecker = true;
+                for (auto val : alphabetValues){
+                    if (val != 0) anagramChecker = false;
+                }
+                if (anagramChecker) results.push_back(word);
+            }
+        }
+    }
+    words = results;
+}
+
+std::string Wordcrafter::Lowercase(std::string word){
+    //number removing solution sound via Riad Afridi Shibly:
+    //https://www.quora.com/How-do-I-remove-numbers-from-a-string-in-C
+
+    word.erase(std::remove_if(word.begin(), word.end(), ispunct), word.end());
+    word.erase(std::remove_if(std::begin(word), std::end(word), [](auto ch)
+    {return std::isdigit(ch);}),word.end());
+    transform(word.begin(), word.end(), word.begin(), ::tolower);
+
+    return word;
+}
+
 
 void Wordcrafter::outputAllVariables() {
 
