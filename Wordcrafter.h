@@ -1,6 +1,16 @@
-//
-// Created by Noah Barnard on 12/6/22.
-//
+/**
+ * Wordsmith: a program to help you craft words for your poems and songs
+ *
+ * Created by Noah Barnard on 12/12/2022
+ * Rhyming algorithm provided by thierryseegers:
+ * https://github.com/thierryseegers/rhymer
+ * 194k word list provided by:
+ * http://www.gwicks.net/dictionaries.htm
+ * 479k word list provided by:
+ * https://github.com/dwyl/english-words
+ * number removing solution sound via Riad Afridi Shibly:
+ * https://www.quora.com/How-do-I-remove-numbers-from-a-string-in-C
+ */
 
 #ifndef WORDSMITH_WORDCRAFTER_H
 #define WORDSMITH_WORDCRAFTER_H
@@ -83,6 +93,7 @@ private:
     void rhymesWithFilter(std::vector<std::string>& words);
     void lengthFilter(std::vector<std::string>& words);
     void lettersFilter(std::vector<std::string>& words);
+    void palindromeFilter(std::vector<std::string>& words);
 
 
     std::string output, startsWith, endsWith, contains, letters, rhymesWith,
@@ -134,6 +145,7 @@ std::vector<std::string> Wordcrafter::craftWords(){
     if(rhymesWithIsUsed) rhymesWithFilter(craftedWords);
     if (lengthIsUsed) lengthFilter(craftedWords);
     if (lettersIsUsed) lettersFilter(craftedWords);
+    if (palindromeIsUsed) palindromeFilter(craftedWords);
 
 
     std::cout << "----------------------------------" << std::endl;
@@ -287,6 +299,42 @@ void Wordcrafter::lettersFilter(std::vector<std::string>& words){
         }
     }
     words = results;
+}
+
+void Wordcrafter::palindromeFilter(std::vector<std::string>& words){
+    std::vector<std::string> results;
+
+    for (auto word : words){
+        if (word.length() > 3) {
+            std::string reverse = word;
+            std::reverse(reverse.begin(), reverse.end());
+
+            if (word == reverse) {
+                results.push_back(word);
+            }
+        }
+    }
+
+    words = results;
+
+    /*
+    for (auto word : words) {
+        if (word.length() > 3) {
+            int j = word.length() - 1;
+            int i = 0;
+            bool checker = true;
+            while (i < j) {
+                if (word.at(i) != word.at(j - i)) {
+                    checker = false;
+                    break;
+                } else i++;
+            }
+            if (checker) results.push_back(word);
+        }
+    }
+    words = results;
+    */
+
 }
 
 std::string Wordcrafter::Lowercase(std::string word){
