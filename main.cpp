@@ -46,11 +46,13 @@ private:
     *right_column_sizer, *middle_first_sizer, *middle_second_sizer, *middle_third_sizer, *middle_third_left_sizer,
     *middle_fourth_sizer, *middle_fifth_sizer, *checkBoxesSizer, *generateWithBorder;
 
-    wxPanel *banner, *metronome, *output, *generate, *startsWith, *endsWith, *contains, *letters, *anagram,
-    *length, *syllables, *rhymesWith, *wordType, *homophone, *omitLetters, *synonym, *antonym, *checkBoxesPanel,
-    *border_top, *border_bottom, *border_left, *border_right;
+    wxPanel *banner, *metronome, *output, *generate, *startsWith, *endsWith, *contains, *letters, *anagram, *length,
+    *syllables, *rhymesWith, *wordType, *homophone, *omitLetters, *synonym, *antonym, *checkBoxesPanel, *border_top,
+    *border_bottom, *border_left, *border_right, *wordListPanel, *miniWordListPanelTop, *miniWordListPanelBottom;
 
     wxListBox *wordList;
+
+    wxStaticText *wordListLabel;
 
     wxCheckBox *anagramCheckBox;
 
@@ -372,13 +374,29 @@ void MyFrame::OnChoice(wxCommandEvent &e){
 
 void MyFrame::OnButtonClicked(wxCommandEvent &e) {
 
+    auto w = wordcrafter.craftWords();
     wordcrafter.outputAllVariables();
-    wordcrafter.craftWords();
 
-    border_top->SetBackgroundColour(wxColor(160, 203, 30));
-    border_bottom->SetBackgroundColour(wxColor(160, 203, 30));
-    border_left->SetBackgroundColour(wxColor(160, 203, 30));
-    border_right->SetBackgroundColour(wxColor(160, 203, 30));
+    wordList->Clear();
+    for (auto word: w){
+        wordList->AppendString(word);
+    }
+
+    if (!w.empty()) {
+        border_top->SetBackgroundColour(wxColor(160, 203, 30));
+        border_bottom->SetBackgroundColour(wxColor(160, 203, 30));
+        border_left->SetBackgroundColour(wxColor(160, 203, 30));
+        border_right->SetBackgroundColour(wxColor(160, 203, 30));
+        wordListLabel->SetLabel(std::to_string(w.size()) + " Words Found!");
+        wordListLabel->Center();
+    } else {
+        border_top->SetBackgroundColour(wxColor(237, 67, 83));
+        border_bottom->SetBackgroundColour(wxColor(237, 67, 83));
+        border_left->SetBackgroundColour(wxColor(237, 67, 83));
+        border_right->SetBackgroundColour(wxColor(237, 67, 83));
+        wordListLabel->SetLabel("0 Words Found");
+        wordListLabel->Center();
+    }
     Refresh();
     Update();
 
@@ -730,8 +748,24 @@ void MyFrame::CreateGUI() {
     //--ANTONYM TEXT FIELD--//
 
     /** RIGHT_COLUMN CONTAINS **/
-    wordList = new wxListBox(this, wordListID,wxDefaultPosition, wxDefaultSize);
+    wordList = new wxListBox(this, wordListID, wxDefaultPosition, wxDefaultSize);
     wordList->SetBackgroundColour (wxColor(254, 227, 126));
+
+    //main top panel with text of words found
+    wordListPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    wordListPanel->SetBackgroundColour(wxColor(254, 227, 126));
+    wordListLabel = new wxStaticText(wordListPanel, wxID_ANY, "0 Words Found");
+    wordListLabel->SetFont(wxFont(30, wxFONTFAMILY_DEFAULT,
+                                  wxFONTSTYLE_NORMAL, wxFONTSTYLE_NORMAL));
+    auto tempSizer = new wxBoxSizer(wxVERTICAL);
+    tempSizer->Add(wordListLabel, 1, wxCENTER);
+    wordListPanel->SetSizerAndFit(tempSizer);
+
+    //mini panels (top and bottom border)
+    miniWordListPanelTop = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    miniWordListPanelTop->SetBackgroundColour(wxColor(254, 227, 126));
+    miniWordListPanelBottom = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
+    miniWordListPanelBottom->SetBackgroundColour(wxColor(254, 227, 126));
 
 }
 
@@ -771,7 +805,10 @@ void MyFrame::CombineSizers(){
     left_column_sizer->Add(generateWithBorder, 12, wxEXPAND);
 
     /** RIGHT **/
-    right_column_sizer->Add(wordList, 1, wxEXPAND);
+    right_column_sizer->Add(miniWordListPanelTop, 2, wxEXPAND);
+    right_column_sizer->Add(wordListPanel, 5, wxEXPAND);
+    right_column_sizer->Add(miniWordListPanelBottom, 2, wxEXPAND);
+    right_column_sizer->Add(wordList, 100, wxEXPAND);
 
     /** BODY **/
     body_sizer->Add(left_column_sizer, 25, wxEXPAND);
