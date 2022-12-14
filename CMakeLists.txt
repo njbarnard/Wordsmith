@@ -22,6 +22,10 @@ find_package (wxWidgets COMPONENTS core base REQUIRED)
 ## Actual config file starts here
 ##--------------------------------------------------
 
+# For Rhymer.h
+include_directories(
+        ${PROJECT_SOURCE_DIR}/include)
+
 # wxWidgets include (this will do all the magic to configure everything)
 include ("${wxWidgets_USE_FILE}")
 
@@ -31,10 +35,27 @@ set (SRCS main.cpp)
 # containing the manifest, icon and other resources
 
 if (WIN32)
-    set (SRCS ${SRCS} wxWidgetTest.rc main.cpp Wordcrafter.h Wordcrafter.cpp)
+    set (SRCS ${SRCS} wxWidgetTest.rc main.cpp Wordcrafter.h)
 endif (WIN32)
 
 add_executable(${PROJECT_NAME} WIN32 ${SRCS})
 target_link_libraries (${PROJECT_NAME} ${wxWidgets_LIBRARIES})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        CXX_STANDARD 20
+        CXX_STANDARD_REQUIRED ON)
+
+# For Rhymer.h
+if(MSVC)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/cmudict-0.7b $<TARGET_FILE_DIR:${PROJECT_NAME}>\\..
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/cmudict-0.7b.phones $<TARGET_FILE_DIR:${PROJECT_NAME}>\\..)
+else()
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/cmudict-0.7b $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/cmudict-0.7b.phones $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+endif()
+
+
 
 
