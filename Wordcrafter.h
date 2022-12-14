@@ -95,6 +95,7 @@ private:
     void lettersFilter(std::vector<std::string>& words);
     void palindromeFilter(std::vector<std::string>& words);
     void omitLettersFilter(std::vector<std::string>& words);
+    void homophoneFilter(std::vector<std::string>& words);
 
 
     std::string output, startsWith, endsWith, contains, letters, rhymesWith,
@@ -148,6 +149,7 @@ std::vector<std::string> Wordcrafter::craftWords(){
     if (lettersIsUsed) lettersFilter(craftedWords);
     if (palindromeIsUsed) palindromeFilter(craftedWords);
     if (omitLettersIsUsed) omitLettersFilter(craftedWords);
+    if (homophoneIsUsed) homophoneFilter(craftedWords);
 
 
     std::cout << "----------------------------------" << std::endl;
@@ -355,6 +357,29 @@ void Wordcrafter::omitLettersFilter(std::vector<std::string>& words){
             if (isalpha(x)) { if (alphabet.at(x - 97) > 0) checker = false; }
         }
         if (checker) results.push_back(word);
+    }
+
+    words = results;
+}
+
+void Wordcrafter::homophoneFilter(std::vector<std::string>& words){
+    std::vector<std::string> results;
+
+    rhymer r(std::ifstream("../cmudict-0.7b"), std::ifstream("../cmudict-0.7b.phones"));
+    auto const homophonePronunciation = r.pronunciation(homophone);
+
+    /*
+     * r.pronunciation crashes if you give it a word not in its dictionary, but
+     * r.rhymes returns an empty vector if you give it a word not in its dictionary.
+     * Thus, r.rhymes is used to check for a valid word in the pronunciation dictionary
+     * [It slows down the runtime substantially but stops it from crashing]
+     */
+    for (auto word : words) {
+        auto const rhymes = r.rhymes(word);
+        if (!rhymes.empty()){
+            auto const wordPronunciation = r.pronunciation(word);
+            if (homophonePronunciation == wordPronunciation) results.push_back(word);
+        }
     }
 
     words = results;
