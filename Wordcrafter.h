@@ -17,7 +17,7 @@
 
 #include <vector>
 #include <unordered_set>
-#include "ryhmer.h"
+#include "rhymer.h"
 #include <iostream>
 
 
@@ -94,6 +94,7 @@ private:
     void lengthFilter(std::vector<std::string>& words);
     void lettersFilter(std::vector<std::string>& words);
     void palindromeFilter(std::vector<std::string>& words);
+    void omitLettersFilter(std::vector<std::string>& words);
 
 
     std::string output, startsWith, endsWith, contains, letters, rhymesWith,
@@ -146,6 +147,7 @@ std::vector<std::string> Wordcrafter::craftWords(){
     if (lengthIsUsed) lengthFilter(craftedWords);
     if (lettersIsUsed) lettersFilter(craftedWords);
     if (palindromeIsUsed) palindromeFilter(craftedWords);
+    if (omitLettersIsUsed) omitLettersFilter(craftedWords);
 
 
     std::cout << "----------------------------------" << std::endl;
@@ -305,6 +307,7 @@ void Wordcrafter::palindromeFilter(std::vector<std::string>& words){
     std::vector<std::string> results;
 
     for (auto word : words){
+        //the word must be 4 letters long (filters out junk words)
         if (word.length() > 3) {
             std::string reverse = word;
             std::reverse(reverse.begin(), reverse.end());
@@ -317,6 +320,7 @@ void Wordcrafter::palindromeFilter(std::vector<std::string>& words){
 
     words = results;
 
+    //old, manual solution
     /*
     for (auto word : words) {
         if (word.length() > 3) {
@@ -334,7 +338,26 @@ void Wordcrafter::palindromeFilter(std::vector<std::string>& words){
     }
     words = results;
     */
+}
 
+void Wordcrafter::omitLettersFilter(std::vector<std::string>& words){
+    std::vector<std::string> results;
+
+    std::vector<int> alphabet(26, 0);
+    std::string allLetters = Lowercase(omitLetters);
+    for (char x : allLetters){
+        if (isalpha(x)) alphabet.at(x - 97)++;
+    }
+
+    for (auto word: words) {
+        bool checker = true;
+        for (char x: word) {
+            if (isalpha(x)) { if (alphabet.at(x - 97) > 0) checker = false; }
+        }
+        if (checker) results.push_back(word);
+    }
+
+    words = results;
 }
 
 std::string Wordcrafter::Lowercase(std::string word){
