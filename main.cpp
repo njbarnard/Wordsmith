@@ -389,6 +389,7 @@ void MyFrame::OnButtonClicked(wxCommandEvent &e) {
         border_right->SetBackgroundColour(wxColor(160, 203, 30));
         wordListLabel->SetLabel(std::to_string(w.size()) + " Words Found!");
         wordListLabel->Center();
+
     } else {
         border_top->SetBackgroundColour(wxColor(237, 67, 83));
         border_bottom->SetBackgroundColour(wxColor(237, 67, 83));
@@ -637,7 +638,7 @@ void MyFrame::CreateGUI() {
     //--SYLLABLES SLIDER--//
     auto syllablesLabel = new wxStaticText(syllables, wxID_ANY, " Syllables:");
     syllablesLabel->SetFont(defaultFont);
-    syllablesSlider = new wxSlider(syllables, wxID_ANY, 1, 0, 10, wxDefaultPosition,
+    syllablesSlider = new wxSlider(syllables, wxID_ANY, 1, 0, 8, wxDefaultPosition,
                                 wxDefaultSize, m_windowStyle=wxSL_LABELS);
     syllablesSlider->SetFont(wxFont(14, wxMODERN, wxFONTSTYLE_NORMAL,
                                  wxFONTSTYLE_NORMAL));

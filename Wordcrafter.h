@@ -8,6 +8,8 @@
  * http://www.gwicks.net/dictionaries.htm
  * 479k word list provided by:
  * https://github.com/dwyl/english-words
+ * 25k syllables list provided by:
+ * https://github.com/gautesolheim/25000-syllabified-words-list#readme
  * number removing solution sound via Riad Afridi Shibly:
  * https://www.quora.com/How-do-I-remove-numbers-from-a-string-in-C
  */
@@ -76,6 +78,8 @@ public:
         else return "False";
     };
 
+    static std::string intToString(int num);
+
 private:
 
     void InitializeBools();
@@ -83,7 +87,7 @@ private:
     //algorithm-specific variables
     int previousLongListIsUsed, previousProperNounIsUsed;
     std::vector<std::string> wordList{};
-    std::unordered_set<std::string> wordSet{};
+    //std::unordered_set<std::string> wordSet{};
 
     //algorithm functions
     void parseWordList(std::string& filePath);
@@ -96,6 +100,7 @@ private:
     void palindromeFilter(std::vector<std::string>& words);
     void omitLettersFilter(std::vector<std::string>& words);
     void homophoneFilter(std::vector<std::string>& words);
+    void syllablesFilter(std::vector<std::string>& words);
 
 
     std::string output, startsWith, endsWith, contains, letters, rhymesWith,
@@ -150,14 +155,16 @@ std::vector<std::string> Wordcrafter::craftWords(){
     if (palindromeIsUsed) palindromeFilter(craftedWords);
     if (omitLettersIsUsed) omitLettersFilter(craftedWords);
     if (homophoneIsUsed) homophoneFilter(craftedWords);
+    if (syllablesIsUsed) syllablesFilter(craftedWords);
 
 
+    /*
     std::cout << "----------------------------------" << std::endl;
     for (auto word : craftedWords)
         std::cout << word << std::endl;
     std::cout << "----------------------------------" << std::endl;
     std::cout << craftedWords.size() << " words found!";
-
+    */
 
     return craftedWords;
 }
@@ -166,7 +173,7 @@ void Wordcrafter::parseWordList(std::string& filePath){
     std::string word;
     std::ifstream file(filePath);
     wordList.clear();
-    wordSet.clear();
+    //wordSet.clear();
 
     if (!file) {
         //checks to make sure the file can be opened
@@ -177,7 +184,7 @@ void Wordcrafter::parseWordList(std::string& filePath){
     while (!file.eof()) {
         getline(file, word); //gets word
         wordList.push_back(word);
-        wordSet.insert(word);
+        //wordSet.insert(word);
     }
 }
 
@@ -385,6 +392,36 @@ void Wordcrafter::homophoneFilter(std::vector<std::string>& words){
     words = results;
 }
 
+void Wordcrafter::syllablesFilter(std::vector<std::string>& words){
+    std::vector<std::string> results;
+    std::unordered_set<std::string> syllableSet{};
+
+    std::string filePath;
+    if (syllables == 1)
+        filePath = "../syllables25k/" + intToString(syllables) + "-syllable-sorted-by-prevalence.txt";
+    else
+        filePath = "../syllables25k/" + intToString(syllables) + "-syllables-sorted-by-prevalence.txt";
+
+    std::string word;
+    std::ifstream file(filePath);
+
+    if (!file) {
+        //checks to make sure the file can be opened
+        std::cout << "Syllables file cannot be opened" << std::endl << std::endl;
+        return;
+    }
+
+    while (!file.eof()) {
+        getline(file, word); //gets word
+        syllableSet.insert(word);
+    }
+
+    for (auto word : words){
+        if (syllableSet.find(word) != syllableSet.end()) results.push_back(word);
+    }
+    words = results;
+}
+
 std::string Wordcrafter::Lowercase(std::string word){
     //number removing solution sound via Riad Afridi Shibly:
     //https://www.quora.com/How-do-I-remove-numbers-from-a-string-in-C
@@ -395,6 +432,38 @@ std::string Wordcrafter::Lowercase(std::string word){
     transform(word.begin(), word.end(), word.begin(), ::tolower);
 
     return word;
+}
+
+std::string Wordcrafter::intToString(int num){
+    switch(num) {
+        case 1:
+            return  "one";
+            break;
+        case 2:
+            return "two";
+            break;
+        case 3:
+            return "three";
+            break;
+        case 4:
+            return "four";
+            break;
+        case 5:
+            return "five";
+            break;
+        case 6:
+            return "six";
+            break;
+        case 7:
+            return "seven";
+            break;
+        case 8:
+            return "eight";
+            break;
+        default:
+            return"NaN";
+            break;
+    }
 }
 
 
