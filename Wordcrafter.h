@@ -19,8 +19,10 @@
 
 #include <vector>
 #include <unordered_set>
-#include "rhymer.h"
 #include <iostream>
+#include "rhymer.h"
+#include "Affix.h"
+
 
 
 class Wordcrafter {
@@ -87,7 +89,7 @@ private:
     //algorithm-specific variables
     int previousLongListIsUsed, previousProperNounIsUsed;
     std::vector<std::string> wordList{};
-    //std::unordered_set<std::string> wordSet{};
+    std::unordered_set<std::string> wordSet{};
 
     //algorithm functions
     void parseWordList(std::string& filePath);
@@ -101,6 +103,7 @@ private:
     void omitLettersFilter(std::vector<std::string>& words);
     void homophoneFilter(std::vector<std::string>& words);
     void syllablesFilter(std::vector<std::string>& words);
+    void compoundWordFilter(std::vector<std::string>& words);
 
 
     std::string output, startsWith, endsWith, contains, letters, rhymesWith,
@@ -156,6 +159,7 @@ std::vector<std::string> Wordcrafter::craftWords(){
     if (omitLettersIsUsed) omitLettersFilter(craftedWords);
     if (homophoneIsUsed) homophoneFilter(craftedWords);
     if (syllablesIsUsed) syllablesFilter(craftedWords);
+    if (compoundWordIsUsed) compoundWordFilter(craftedWords);
 
 
     /*
@@ -173,7 +177,7 @@ void Wordcrafter::parseWordList(std::string& filePath){
     std::string word;
     std::ifstream file(filePath);
     wordList.clear();
-    //wordSet.clear();
+    wordSet.clear();
 
     if (!file) {
         //checks to make sure the file can be opened
@@ -184,7 +188,7 @@ void Wordcrafter::parseWordList(std::string& filePath){
     while (!file.eof()) {
         getline(file, word); //gets word
         wordList.push_back(word);
-        //wordSet.insert(word);
+        wordSet.insert(word);
     }
 }
 
@@ -358,7 +362,7 @@ void Wordcrafter::omitLettersFilter(std::vector<std::string>& words){
         if (isalpha(x)) alphabet.at(x - 97)++;
     }
 
-    for (auto word: words) {
+    for (auto word : words) {
         bool checker = true;
         for (char x: word) {
             if (isalpha(x)) { if (alphabet.at(x - 97) > 0) checker = false; }
@@ -422,8 +426,38 @@ void Wordcrafter::syllablesFilter(std::vector<std::string>& words){
     words = results;
 }
 
+void Wordcrafter::compoundWordFilter(std::vector<std::string>& words){
+    std::vector<std::string> results;
+
+    //filters out words which are not compound words
+    //based off of code provided by Ashutosh:
+    //https://www.careercup.com/question?id=6224460008914944
+
+    Affix affix;
+
+    for (auto word : words) {
+        int n = word.length();
+        if (n >= 6) {
+        //ensure that each of the words forming the compound word are at least 3 letters in length
+            for (int i = 3; i < n - 2; i++) {
+                //loop over the word, breaking it into two halves each time
+                std::string x = word.substr(0, i);
+                std::string y = word.substr(i, n - 1);
+                if ((wordSet.find(x) != wordSet.end()) && (wordSet.find(y) != wordSet.end())
+                        && !affix.isPrefix(x) && !affix.isSuffix(y)) {
+                    //if the two substrings are valid words and are not prefixes or suffixes,
+                    //the word is a compound word and can be added to the results
+                    results.push_back(word);
+                    break;
+                }
+            }
+        }
+    }
+    words = results;
+}
+
 std::string Wordcrafter::Lowercase(std::string word){
-    //number removing solution sound via Riad Afridi Shibly:
+    //number removing solution found via Riad Afridi Shibly:
     //https://www.quora.com/How-do-I-remove-numbers-from-a-string-in-C
 
     word.erase(std::remove_if(word.begin(), word.end(), ispunct), word.end());
