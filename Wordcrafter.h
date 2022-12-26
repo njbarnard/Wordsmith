@@ -4,13 +4,15 @@
  * Created by Noah Barnard on 12/12/2022
  * Rhyming algorithm provided by thierryseegers:
  * https://github.com/thierryseegers/rhymer
+ * 10k word list provided by:
+ * https://github.com/first20hours/google-10000-english
  * 194k word list provided by:
  * http://www.gwicks.net/dictionaries.htm
  * 479k word list provided by:
  * https://github.com/dwyl/english-words
  * 25k syllables list provided by:
- * https://github.com/gautesolheim/25000-syllabified-words-list#readme
- * number removing solution sound via Riad Afridi Shibly:
+ * https://github.com/gautesolheim/25000-syllabified-words-list
+ * number removing solution found via Riad Afridi Shibly:
  * https://www.quora.com/How-do-I-remove-numbers-from-a-string-in-C
  */
 
@@ -33,7 +35,7 @@ public:
         InitializeBools();
         shortWordListPath = "../english194k.txt";
         longWordListPath = "../english479k.txt";
-        properNounListPath = "../english479k.txt";
+        properNounListPath = "../english10k.txt";
     }
 
     //algorithm functions
