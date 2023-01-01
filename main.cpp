@@ -26,7 +26,7 @@ public:
     MyFrame (const wxString &title, const wxPoint &pos, const wxSize &size);
     void OnTyping(wxCommandEvent &e);
     void OnOutputTyping(wxCommandEvent &e);
-    void OnListBoxChecked(wxCommandEvent &e);
+    //void OnListBoxChecked(wxCommandEvent &e);
     void OnBoxChecked(wxCommandEvent &e);
     void OnSlide(wxCommandEvent &e);
     void OnChoice(wxCommandEvent &e);
@@ -56,7 +56,7 @@ private:
 
     wxCheckBox *anagramCheckBox;
 
-    wxCheckListBox *checkBoxes;
+    //wxCheckListBox *checkBoxes;
 
     wxButton *generateButton;
 
@@ -68,6 +68,10 @@ private:
     *rhymesWithField, *homophoneField, *omitLettersField, *synonymField, *antonymField, *outputField;
 
     int checkCount;
+
+    //EDITED STUFF
+    wxPanel *checkBoxesPanel1, *checkBoxesPanel2, *checkBoxesPanel3, *checkBoxesPanel4, *checkBoxesPanel5;
+    wxCheckBox *checkBox1, *checkBox2, *checkBox3, *checkBox4, *checkBox5;
 
 };
 
@@ -105,7 +109,7 @@ void MyFrame::BindEvents(){
     synonym->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
     antonym->Bind(wxEVT_TEXT, &MyFrame::OnTyping, this);
     anagram->Bind(wxEVT_CHECKBOX, &MyFrame::OnBoxChecked, this);
-    checkBoxes->Bind(wxEVT_CHECKLISTBOX, &MyFrame::OnListBoxChecked, this);
+    //checkBoxes->Bind(wxEVT_CHECKLISTBOX, &MyFrame::OnListBoxChecked, this);
     length->Bind(wxEVT_SLIDER, &MyFrame::OnSlide, this);
     syllables->Bind(wxEVT_SLIDER, &MyFrame::OnSlide, this);
     wordType->Bind(wxEVT_CHOICE, &MyFrame::OnChoice, this);
@@ -252,6 +256,7 @@ void MyFrame::OnBoxChecked(wxCommandEvent &e){
     e.Skip();
 }
 
+/*
 void MyFrame::OnListBoxChecked(wxCommandEvent &e){
 
     bool isChecked = false;
@@ -298,6 +303,7 @@ void MyFrame::OnListBoxChecked(wxCommandEvent &e){
     Refresh();
     e.Skip();
 }
+ */
 
 void MyFrame::OnSlide(wxCommandEvent &e){
     wxSlider *slider = wxDynamicCast(e.GetEventObject(), wxSlider);
@@ -594,24 +600,47 @@ void MyFrame::CreateGUI() {
 
     /** MIDDLE_THIRD CONTAINS **/
     middle_third_left_sizer = new wxBoxSizer (wxVERTICAL);
-    checkBoxesPanel = new wxPanel(this, checkBoxesPanelID, wxDefaultPosition, wxDefaultSize);
-    checkBoxesPanel->SetBackgroundColour (wxColor(154,207,220));
 
-    //--CHECKBOXES--//
-    checkBoxes = new wxCheckListBox(this, checkBoxesID, wxDefaultPosition,
-                                    wxSize(FromDIP(5), wxDefaultSize.GetHeight()));
-    checkBoxes->Append("Palindrome");
-    checkBoxes->Append("Kangaroo Word");
-    checkBoxes->Append("Compound Word");
-    checkBoxes->Append("Proper Noun");
-    checkBoxes->Append("Long Word List");
-    checkBoxes->Append("Perfect Rhyme");
-    checkBoxes->SetBackgroundColour(wxColor(154,207,220));
-    checkBoxes->SetFont(wxFont(26, wxFONTFAMILY_DEFAULT,
-                               wxFONTSTYLE_NORMAL, wxFONTSTYLE_NORMAL));
+    std::cout << "test1" << std::endl;
+    checkBoxesPanel1 = new wxPanel(this, checkBoxesPanelID, wxDefaultPosition, wxDefaultSize);
+    checkBoxesPanel1->SetBackgroundColour(wxColor(154,207,220));
+    checkBoxesPanel1->SetFont(defaultMediumFont);
+    checkBoxesPanel2 = new wxPanel(this, checkBoxesPanelID, wxDefaultPosition, wxDefaultSize);
+    checkBoxesPanel2->SetBackgroundColour(wxColor(154,207,220));
+    checkBoxesPanel2->SetFont(defaultMediumFont);
+    checkBoxesPanel3 = new wxPanel(this, checkBoxesPanelID, wxDefaultPosition, wxDefaultSize);
+    checkBoxesPanel3->SetBackgroundColour(wxColor(154,207,220));
+    checkBoxesPanel3->SetFont(defaultMediumFont);
+    checkBoxesPanel4 = new wxPanel(this, checkBoxesPanelID, wxDefaultPosition, wxDefaultSize);
+    checkBoxesPanel4->SetBackgroundColour(wxColor(154,207,220));
+    checkBoxesPanel4->SetFont(defaultMediumFont);
+    checkBoxesPanel5 = new wxPanel(this, checkBoxesPanelID, wxDefaultPosition, wxDefaultSize);
+    checkBoxesPanel5->SetBackgroundColour(wxColor(154,207,220));
+    checkBoxesPanel5->SetFont(defaultMediumFont);
+    //checkBoxesPanel->SetBackgroundColour (wxColor(154,207,220));
+    std::cout << "test1a" << std::endl;
+    checkBox1 = new wxCheckBox(checkBoxesPanel1, wxID_ANY, "Palindrome      ", wxDefaultPosition,
+                                     wxDefaultSize);
+    checkBox2 = new wxCheckBox(checkBoxesPanel2, wxID_ANY, "Kangaroo Word", wxDefaultPosition,
+                                    wxDefaultSize);
+    checkBox3 = new wxCheckBox(checkBoxesPanel3, wxID_ANY, "Proper Noun", wxDefaultPosition,
+                                    wxDefaultSize);
+    checkBox4 = new wxCheckBox(checkBoxesPanel4, wxID_ANY, "Long Word List", wxDefaultPosition,
+                                    wxDefaultSize);
+    checkBox5 = new wxCheckBox(checkBoxesPanel5, wxID_ANY, "Perfect Rhyme", wxDefaultPosition,
+                                    wxDefaultSize);
+    std::cout << "test1b" << std::endl;
+
+    std::cout << "test1c" << std::endl;
+    //checkBoxesPanel->SetSizerAndFit(testcheckBoxesSizer);
     checkBoxesSizer = new wxBoxSizer (wxVERTICAL);
-    checkBoxesSizer->Add(checkBoxes, 100, wxEXPAND);
-    checkBoxesSizer->Add(checkBoxesPanel, 26, wxEXPAND);
+    checkBoxesSizer->Add(checkBoxesPanel1, 1, wxEXPAND);
+    checkBoxesSizer->Add(checkBoxesPanel2, 1, wxEXPAND);
+    checkBoxesSizer->Add(checkBoxesPanel3, 1, wxEXPAND);
+    checkBoxesSizer->Add(checkBoxesPanel4, 1, wxEXPAND);
+    checkBoxesSizer->Add(checkBoxesPanel5, 1, wxEXPAND);
+    //checkBoxesSizer->Add(checkBoxesPanel, 1, wxEXPAND);
+    std::cout << "test2" << std::endl;
     //--CHECKBOXES--//
 
     /** MIDDLE_THIRD_LEFT CONTAINS **/
@@ -783,8 +812,10 @@ void MyFrame::CombineSizers(){
     middle_third_left_sizer->Add(length, 1, wxEXPAND);
     middle_third_left_sizer->Add(syllables, 1, wxEXPAND);
 
+    std::cout << "test3" << std::endl;
     middle_third_sizer->Add(middle_third_left_sizer, 20, wxEXPAND);
     middle_third_sizer->Add(checkBoxesSizer, 15, wxEXPAND);
+    std::cout << "test4" << std::endl;
 
     middle_fourth_sizer->Add(rhymesWith, 1, wxEXPAND);
     middle_fourth_sizer->Add(homophone, 1, wxEXPAND);
@@ -824,4 +855,10 @@ void MyFrame::CombineSizers(){
     main_sizer->Add(body_sizer, 540, wxEXPAND);
 
     this->SetSizerAndFit (main_sizer);
+
+    checkBox1->Center();
+    checkBox2->Center();
+    checkBox3->Center();
+    checkBox4->Center();
+    checkBox5->Center();
 }
